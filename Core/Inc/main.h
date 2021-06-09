@@ -30,20 +30,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
 
-#include "stm32f1xx_ll_usart.h"
-#include "stm32f1xx_ll_rcc.h"
-#include "stm32f1xx_ll_bus.h"
-#include "stm32f1xx_ll_system.h"
-#include "stm32f1xx_ll_exti.h"
-#include "stm32f1xx_ll_cortex.h"
-#include "stm32f1xx_ll_utils.h"
-#include "stm32f1xx_ll_pwr.h"
-#include "stm32f1xx_ll_dma.h"
-#include "stm32f1xx_ll_gpio.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "peri_GlobalVariablesExtern.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -91,10 +80,6 @@ void Error_Handler(void);
 #define VO_GPIO_Port GPIOB
 #define VTMP_Pin GPIO_PIN_1
 #define VTMP_GPIO_Port GPIOB
-#define SCL_Pin GPIO_PIN_10
-#define SCL_GPIO_Port GPIOB
-#define SDA_Pin GPIO_PIN_11
-#define SDA_GPIO_Port GPIOB
 #define CLK1_Pin GPIO_PIN_12
 #define CLK1_GPIO_Port GPIOB
 #define CLK2_Pin GPIO_PIN_13

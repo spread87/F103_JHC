@@ -14,8 +14,8 @@ void rx485_raw_read(void *arg, char data);
 void RS485_init(void)
 {
 	RS485_REDE_RE;
-	MX_USART1_UART_Init();
-	MX_TIM2_Init();
+	//MX_USART1_UART_Init();
+	//MX_TIM2_Init();
 	set_usart_recvice_callback(rx485_raw_read, NULL);
 }
 
@@ -37,6 +37,6 @@ void rx485_raw_read(void *arg, char data)
 {
 	(void)arg;
 	//local_rx485_rxbuf[local_rx_cnt++] = data;
-	rs485_raw_send(&data, 1);
+	rx485_raw_read(&data, 1);
 }
 

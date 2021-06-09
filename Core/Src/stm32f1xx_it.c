@@ -58,6 +58,7 @@
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -210,7 +211,7 @@ void TIM3_IRQHandler(void)
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
   /* USER CODE BEGIN TIM3_IRQn 1 */
-
+  SysCore100usLoop();//current loop
   /* USER CODE END TIM3_IRQn 1 */
 }
 
@@ -220,11 +221,19 @@ void TIM3_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-
+	static uint16_t i=0;
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
+  timer_count++;
+  SysCore1msLoop();
 
+  i++;
+  if(i>=500)
+  {
+  MX_GPIO_Toggle(LED1_GPIO_Port,LED1_Pin);
+  i=0;
+  }
   /* USER CODE END TIM4_IRQn 1 */
 }
 
@@ -234,11 +243,12 @@ void TIM4_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-extern void USART1_HANDLER(void);
-	USART1_HANDLER();
-  /* USER CODE END USART1_IRQn 0 */
-  /* USER CODE BEGIN USART1_IRQn 1 */
 
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+  extern void USART1_HANDLER(void);
+  	USART1_HANDLER();
   /* USER CODE END USART1_IRQn 1 */
 }
 
