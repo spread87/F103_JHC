@@ -22,6 +22,7 @@
 #include "adc.h"
 #include "can.h"
 #include "crc.h"
+#include "dma.h"
 #include "i2c.h"
 #include "tim.h"
 #include "usart.h"
@@ -29,8 +30,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "com.h"
-#define SEND_STR	"This is a demo\r\n"
+#include "peri_Init.h"
 
 /* USER CODE END Includes */
 
@@ -102,9 +102,9 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_CAN_Init();
-  MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
@@ -116,14 +116,13 @@ int main(void)
   /* USER CODE BEGIN 2 */
   MX_TIM4_Start();
   InitModule();
-  //RS485_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  SysMainLoop();
+    SysMainLoop();
 
     /* USER CODE END WHILE */
 
@@ -182,11 +181,8 @@ void SystemClock_Config(void)
   */
 static void MX_NVIC_Init(void)
 {
-  /* TIM3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(TIM3_IRQn);
   /* TIM4_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(TIM4_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(TIM4_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(TIM4_IRQn);
 }
 

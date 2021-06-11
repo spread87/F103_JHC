@@ -31,6 +31,7 @@ INERTIA_STATUS      Inertia_status=INERTIA_DEFAULTS;
 /********bmef_cal****************/
 
 uint16_t            Timer1msCount = 0;
+uint16_t SWI_Tick = 0;
 
 /**********USB Communication*******/
 /* Buffer to receive data */

@@ -4,7 +4,7 @@
  * Created on: 2014-5-23
  * Author: JH-LvSL
  */
-#include <main.h>			//Declarations from DAVE3 Code Generation (includes SFR declaration)
+#include <main.h>
 #include <peri_GlobalVariablesExtern.h>
 
 DICtrl	DICtrlFlg1;//9���������

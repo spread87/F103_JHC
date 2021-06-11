@@ -20,12 +20,8 @@
 //#include <peri_InitCCU8.h>
 //#include <peri_InitPOSIF.h>
 #include <peri_LpfHpf.h>
-//#include <peri_NVIC.h>
-//#include <peri_PulseInputProcess.h>
-//#include <peri_PulseOutputProcess.h>
-//#include <peri_SeriEncoder.h>
 #include <peri_TimerCtl.h>
-//#include <peri_UARTHandle.h>
+#include <peri_UARTHandle.h>
 
 #include "core_StructDef.h"
 #ifndef ARM_MATH_CM4
@@ -61,6 +57,8 @@
 #endif
 
 extern uint16_t 			Timer1msCount;
+extern uint16_t SWI_Tick;
+
 extern FuncCode	 			FuncCode_Handle;
 extern CoreStatusFlg 		CoreStatusFlag;
 extern AlarmStatusFlg		AlarmStatusFlag;
@@ -70,21 +68,14 @@ extern CURRENT	  			Current1msQ24;
 
 extern LPF64   				PositionCmdFil;
 extern LPF 					VeloFeedFwdFil;
-
 extern LPF 					VeloFeedBackFil ;
-
 extern LPF 					CurFeedFwdFil ;
-
 extern LPF 					Velocity1msFil ;
-
 extern LPF 					Velocity10msFil ;
 
 extern DICtrl				DICtrlFlg;
-
 extern DICtrl				VirtualDICtrlFlg;
-
 extern DICtrl				TerminalDICtrlFlg;
-
 extern DOCtrl	 			DOCtrlFlg;
 
 extern DOActive				DOActiveSet;//20170329  mxj
@@ -94,24 +85,16 @@ extern DOFunc				DOFuncSet;//20170329  mxj
 extern AnalogInput 			ExAI;
 
 extern TqLimit 				TorqueLimit;
-
 extern DriverParameter 		DriverPara;
 
 extern SystemTimeSequ		SysTimeSequ;
-
 extern MotorSts 			MotorStatus;
-
 extern AlmRcd 				AlmRecord;
-
 extern ComCMDFlg			ComCtrlFlg;
-
 extern COMVirlDI			COMVirtualDI;	//Communication Virtual DI Value
 
 extern uint32_t 			SysTickCount;
-
 extern uint32_t 			g_FcodeChangeFlag;
-
-
 
 /********Function Code Global Block*********/
 extern const uint16_t FcodeTable[][2];
@@ -284,9 +267,6 @@ extern uint32_t             g_DIForceOff;
 
 extern FORCEDOONEN          ForceDOOnEn;//ONʹ��
 extern FORCEDOOFFEN         ForceDOOffEn;//OFFʹ��
-
-
-
 
 /******Function Variable Define*****/
 extern uint16_t 	g_CtrlMode;	//From External Set

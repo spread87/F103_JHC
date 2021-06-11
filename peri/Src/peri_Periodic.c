@@ -27,26 +27,23 @@ extern void VFCalc(int32_t );
 extern void InitialAngle(void);
 extern void TerminalDOSpdUpdate(void);
 extern void Dcbus_Break_Calc(void);
-int64_t g_testcount=0;
-uint32_t Timer_Temp0 = 0;
-uint32_t Timer_Temp1 = 0;
 
 //1ms timer treat
 static const PERIODIC_FUNC peri_1ms_periodic_func_table[] =
 {
-    TimerControlThread, /* general timer */
-
-    UpdateAllDiPort,//�����˲�,DI�˲�
-    FuncDIHandle,//9��IO����ں���������ڰ��չ��ܸ�ֵ
-    //TerminalDOHandle,//6��IO����ڣ��������õĹ�����������
-    //TerminalAOHandle,//3��ģ�����ģʽ��2��AD�����
-    //AdcFilter1msHandle,
-    //TerminalAIProcess,//mxj
-    //CanHandle,
-    //Dcbus_Break,//�ƶ��ܿ���
-    //AlmCheckOC,//��������
-    //AlmCheckOV,//moved from 2ms
-	NULL_FUNC
+  TimerControlThread, /* general timer */
+  ModbusHandle,
+  UpdateAllDiPort,//按键滤波,DI滤波
+  FuncDIHandle,//9个IO输入口和虚拟输入口按照功能赋值
+  //TerminalDOHandle,//6个IO输出口，根据配置的功能码进行输出
+  //TerminalAOHandle,//3中模拟输出模式，2个AD输出口
+  //AdcFilter1msHandle,
+  //TerminalAIProcess,//mxj
+  //CanHandle,
+  //Dcbus_Break,//制动管开关
+  //AlmCheckOC,//过流保护
+  //AlmCheckOV,//moved from 2ms
+  NULL_FUNC
 };
 
 //2ms timer treat
@@ -95,7 +92,7 @@ void Peri1msPrdSwi(void)
     static uint16_t count_100ms = 1;
     static uint16_t count_500ms = 1;
 
-   // ServiceDog(); ��סҪ����ι��
+   // ServiceDog(); 记住要控制喂狗
     //peri_periodic_func_start(peri_1ms_periodic_func_table);
 
     if(count_2ms >= 2)
@@ -150,15 +147,11 @@ void peri_periodic_func_start(const PERIODIC_FUNC *func)
 void SysCore1msLoop(void)
 {
 	Timer1msCount++;
-	//PulseOutputRead();//mxj 20160511
-	//PanelLEDButtonHandle();/20180925   moved to down
-	//UART_Test_Handle();//20180419
-	//ModbusHandle();//20180419
-	//CanHandle();//20180716������  20180725
+	SWI_Tick = 1;
 
-	if( (!SysTimeSequ.Start_Flg) || (!SysTimeSequ.Sec10_Flg))//δ�����ã�������
+	if( (!SysTimeSequ.Start_Flg) || (!SysTimeSequ.Sec10_Flg))//未启动好，返回先
 	{
-		g_PulInAllCount = 0;//λ�ø����˲�
+		g_PulInAllCount = 0;//位置给定滤波
 		g_EncPulAllCount = 0;//
 		FuncCode_Handle.Ram.FA0.FA087 = 0;
 
@@ -170,10 +163,9 @@ void SysCore1msLoop(void)
 
 		return;
 	}
-	Peri1msPrdSwi();//����1ms�ֱ�ִ��,�632US
 
 	//USBSendHandle();
-//	AlmReadNum();//20170222  �޷���¼���ϴ��룬���Ļ���
+//	AlmReadNum();//20170222  无法记录故障代码，更改回来
 	//Test();//Control Driver Run/Stop
 
 	PanelLEDButtonHandle();
@@ -189,9 +181,9 @@ void SysCore1msLoop(void)
  * @return none
  */
 //#pragma CODE_SECTION(SysCore100usLoop, "ramfuncs");
-void SysCore100usLoop(void)//��ֹ�����100US
+void SysCore100usLoop(void)//静止不动最长100US
 {
-	//PanelLEDDisplay();//���յ�����17.6
+	//PanelLEDDisplay();//最终的输出最长17.6
 //	IO004_SetOutputValue(IO004_Handle7,0);
 	//AdcReadResult();//Run time:2.3us
 	//AdcFilter100usHandle();	//Run Time:7.8us
@@ -232,16 +224,16 @@ void SysMainLoop(void)
 			//TerminalAIHandle();//AI1Q24,AI2Q24,AI3Q24
 			break;
 		case 5:
-			//ProtectPUValueCalc();//������ֵֹ�ļ���
+			//ProtectPUValueCalc();//保护限止值的计算
 			break;
 		case 6:
-			//AlmRcdDisplay();//���ϼ�¼��ʾ 10ms ->main loop 20170223
-			//MotorParameterInit();//��������ʼ��
+			//AlmRcdDisplay();//故障记录显示 10ms ->main loop 20170223
+			//MotorParameterInit();//马达参数初始化
 			CGParameterInit();
 			//TempCalc();//20171204
 			break;
 		case 7:
-			//Dcbus_Break_Calc();//20171129 �ƶ�������������
+			//Dcbus_Break_Calc();//20171129 制动能力参数更新
 			break;
 		case 8:
 			SysTimeSequ.Start_Flg = OK;//ȫ����һ���� �ٽ��й��ϵļ��
@@ -258,7 +250,7 @@ void SysMainLoop(void)
 	//AlmReadNum();//20170106,moved from 1msloop
 
 	/*Terminal DI Filter Handle*/
-	//UpdateAllDiPort();//1ms�жϳ��������У��˴��Ƿ���Բ�Ҫ��
+	UpdateAllDiPort();//1ms中断程序中已有，此处是否可以不要？
 
 	/*Fan Control*/
 	//FanCtrl();
@@ -266,28 +258,29 @@ void SysMainLoop(void)
 	//RelayCtrl();
 
 	/*Function Code F6015 Handle*/
-	FuncCodeF6015Handle();//F6015����LED��ʾ  �����ǣ�
+	FuncCodeF6015Handle();//F6015是用LED表示  待考虑？
 
 	/*Function Code Storage*/
-	//FcodeValueToEEPROM();//��������E2PROM
+	//FcodeValueToEEPROM();//功能码存进E2PROM
 
 	/*Alarm Record Refresh*/
-	//AlmRcdRefresh();//���ϼ�¼ˢ��
+	//AlmRcdRefresh();//故障记录刷新
 	/*Alarm Record Storage*/
-	//AlmRcdStorage();//���ϼ�¼�洢
+	//AlmRcdStorage();//故障记录存储
 
-	/*����״̬��¼*/
+	/*运行状态记录*/
 	/*DI/DO Status Monitor*/
-	//TerminalIOSts();//���������
+	//TerminalIOSts();//输入输出口
 	/*Monitor Parameter Refresh*/
-	//MonitorParaHandle();//��ز�������   �����ǣ�
+	//MonitorParaHandle();//监控参数处理   待考虑？
 
-	//SysTimeSequ.Start_Flg = OK;//ȫ����һ���� �ٽ��й��ϵļ��
+	//SysTimeSequ.Start_Flg = OK;//全部走一编了 再进行故障的检测
 
 	g_canview13+=1677;
+
+	if(SWI_Tick==1)
+  {
+    SWI_Tick = 0;
+    Peri1msPrdSwi();
+  }
 }
-
-
-
-
-

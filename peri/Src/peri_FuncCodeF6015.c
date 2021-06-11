@@ -6,6 +6,7 @@
  */
 #include <main.h>			//Declarations from DAVE3 Code Generation (includes SFR declaration)
 #include <peri_GlobalVariablesExtern.h>
+#include <stdlib.h>
 
 int32_t g_LEDVelocityCmd;
 int32_t g_LEDPositionCmd;

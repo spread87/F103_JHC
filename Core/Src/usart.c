@@ -21,20 +21,11 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-typedef struct {
-	void *base;
-	void (*call) (void *arg, unsigned char data);
-	void *arg;
-}usart_rx_data_t;
 
-static usart_rx_data_t local_usart1_data = {
-	.base = (void *)USART1,
-};
-
-unsigned char data[10];
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
+DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USART1 init function */
 
@@ -61,7 +52,7 @@ void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-  HAL_UART_Receive_IT(&huart1, data, 1);
+
   /* USER CODE END USART1_Init 2 */
 
 }
@@ -93,8 +84,25 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART1 DMA Init */
+    /* USART1_TX Init */
+    hdma_usart1_tx.Instance = DMA1_Channel4;
+    hdma_usart1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_usart1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_usart1_tx.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_usart1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    hdma_usart1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    hdma_usart1_tx.Init.Mode = DMA_NORMAL;
+    hdma_usart1_tx.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_usart1_tx) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart1_tx);
+
     /* USART1 interrupt Init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
 
@@ -119,6 +127,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
 
+    /* USART1 DMA DeInit */
+    HAL_DMA_DeInit(uartHandle->hdmatx);
+
     /* USART1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspDeInit 1 */
@@ -128,44 +139,16 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
-int set_usart_recvice_callback(void (*call) (void *arg, unsigned char data), void *arg)
+HAL_StatusTypeDef MX_UART_Receive_IT(uint8_t *pData, uint16_t Size)
 {
-	if (!call)
-		return -1;
-	local_usart1_data.call = call;
-	local_usart1_data.arg = arg;
-
-	return 0;
+  return HAL_UART_Receive_IT(&huart1, pData, Size);
 }
 
-int usart1_raw_send(unsigned char *data, int len)
+HAL_StatusTypeDef MX_UART_Transmit_DMA(uint8_t *pData, uint16_t Size)
 {
-	int i;
-
-	if (!data)
-		return 0;
-
-	for (i = 0; i < len; i++) {
-		LL_USART_TransmitData8(USART1, data[i]);
-		while(!LL_USART_IsActiveFlag_TC(USART1));
-	}
-
-	return i;
+  return HAL_UART_Transmit_DMA(&huart1, pData, Size);
 }
 
-void usart1_irq_handler(void *arg, unsigned char data)
-{
-	if (local_usart1_data.call)
-		local_usart1_data.call(local_usart1_data.arg, data);
-}
-
-void USART1_HANDLER(void)
- {
-
-//
-	usart1_irq_handler(local_usart1_data.arg, data[0]);
-
-}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

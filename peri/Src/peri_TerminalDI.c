@@ -4,7 +4,7 @@
  * Created on: 2014-5-22
  * Author: JH-LvSL
  */
-#include <main.h>			//Declarations from DAVE3 Code Generation (includes SFR declaration)
+#include <main.h>
 #include <peri_GlobalVariablesExtern.h>
 #include <peri_SwScan.h>
 #include <peri_TerminalDI.h>

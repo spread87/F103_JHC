@@ -36,12 +36,11 @@ extern "C" {
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);
+
+/* USER CODE BEGIN Prototypes */
 void MX_GPIO_Toggle(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 GPIO_PinState MX_GPIO_ReadPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
 void MX_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
-
-/* USER CODE BEGIN Prototypes */
-
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

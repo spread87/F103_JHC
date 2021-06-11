@@ -56,25 +56,26 @@ const struct Fcode_FuncTbl FcodeChangeTbl[] =
 *************************************************/
 void FuncCodeInit(void)
 {
-	FuncCode_Handle.Init.F00 = FC_InitF00;
-	FuncCode_Handle.Min.F00 = FC_MinF00;
-	FuncCode_Handle.Max.F00 = FC_MaxF00;
-	FuncCode_Handle.Att.F00 = FC_AttF00;
+  FuncCode_Handle.Init.F00 = FC_InitF00;
+  FuncCode_Handle.Min.F00 = FC_MinF00;
+  FuncCode_Handle.Max.F00 = FC_MaxF00;
+  FuncCode_Handle.Att.F00 = FC_AttF00;
 
-	FuncCode_Handle.Init.F50 = FC_InitF50;
-	FuncCode_Handle.Min.F50 = FC_MinF50;
-	FuncCode_Handle.Max.F50 = FC_MaxF50;
-	FuncCode_Handle.Att.F50 = FC_AttF50;
+  FuncCode_Handle.Init.F50 = FC_InitF50;
+  FuncCode_Handle.Min.F50 = FC_MinF50;
+  FuncCode_Handle.Max.F50 = FC_MaxF50;
+  FuncCode_Handle.Att.F50 = FC_AttF50;
 
-	FuncCode_Handle.Init.F60 = FC_InitF60;
-	FuncCode_Handle.Min.F60 = FC_MinF60;
-	FuncCode_Handle.Max.F60 = FC_MaxF60;
-	FuncCode_Handle.Att.F60 = FC_AttF60;
+  FuncCode_Handle.Init.F60 = FC_InitF60;
+  FuncCode_Handle.Min.F60 = FC_MinF60;
+  FuncCode_Handle.Max.F60 = FC_MaxF60;
+  FuncCode_Handle.Att.F60 = FC_AttF60;
 
-	FuncCode_Handle.Init.FA0 = FC_InitFA0;
-	FuncCode_Handle.Min.FA0 = FC_MinFA0;
-	FuncCode_Handle.Max.FA0 = FC_MaxFA0;
-	FuncCode_Handle.Att.FA0 = FC_AttFA0;
+  FuncCode_Handle.Init.FA0 = FC_InitFA0;
+  FuncCode_Handle.Min.FA0 = FC_MinFA0;
+  FuncCode_Handle.Max.FA0 = FC_MaxFA0;
+  FuncCode_Handle.Att.FA0 = FC_AttFA0;
+  FuncCode_Handle.Ram = FuncCode_Handle.Init;
 }
 
 /*************************************************

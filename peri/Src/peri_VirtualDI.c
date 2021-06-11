@@ -32,8 +32,3 @@ void VirtualDIHandle(void)
 {
     DICtrlFlg.all=TerminalDICtrlFlg.all;//temp;
 }
-
-
-
-
-
