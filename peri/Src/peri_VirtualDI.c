@@ -19,13 +19,12 @@
 *************************************************/
 void FuncDIHandle(void)
 {
-	//DIFuncHandle(VirtualDISynthesis);
-    g_DIsts = DI1.flg.bit.DI_sta_F | (DI2.flg.bit.DI_sta_F << 1) |(DI3.flg.bit.DI_sta_F << 2) |(DI4.flg.bit.DI_sta_F << 3) |	\
-    			(DI5.flg.bit.DI_sta_F << 4) |(DI6.flg.bit.DI_sta_F << 5) |(DI7.flg.bit.DI_sta_F << 6) |(DI8.flg.bit.DI_sta_F << 7) | \
-    			(DI9.flg.bit.DI_sta_F << 8);//20190922
+  //DIFuncHandle(VirtualDISynthesis);
+  g_DIsts = DI1.flg.bit.DI_sta_F | (DI2.flg.bit.DI_sta_F << 1) | (DI3.flg.bit.DI_sta_F << 2)
+      | (DI4.flg.bit.DI_sta_F << 3);
 
-	TerminalDIHandle();//IO�����봦��͸����ܱ�־λ����
-	VirtualDIHandle();//����DI1-DI9��ȷ����λ������ ������֧���µĹ���
+  TerminalDIHandle(); //IO�����봦��͸����ܱ�־λ����
+  VirtualDIHandle(); //����DI1-DI9��ȷ����λ������ ������֧���µĹ���
 }
 
 void VirtualDIHandle(void)

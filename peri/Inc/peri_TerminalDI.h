@@ -14,41 +14,22 @@ typedef void (*TERMINALDI_FUNC)(void);
 #define	NumDI2		(uint8_t)2
 #define	NumDI3		(uint8_t)3
 #define	NumDI4		(uint8_t)4
-#define	NumDI5		(uint8_t)5
-#define	NumDI6		(uint8_t)6
-#define	NumDI7		(uint8_t)7
-#define	NumDI8		(uint8_t)8
-#define	NumDI9		(uint8_t)9
 
 extern SW_SCAN_FUN DI1;
 extern SW_SCAN_FUN DI2;
 extern SW_SCAN_FUN DI3;
 extern SW_SCAN_FUN DI4;
-extern SW_SCAN_FUN DI5;
-extern SW_SCAN_FUN DI6;
-extern SW_SCAN_FUN DI7;
-extern SW_SCAN_FUN DI8;
-extern SW_SCAN_FUN DI9;
+
 extern DICtrl	DICtrlFlg1;
 extern DICtrl	DICtrlFlg2;
 extern DICtrl	DICtrlFlg3;
 extern DICtrl	DICtrlFlg4;
-extern DICtrl	DICtrlFlg5;
-extern DICtrl	DICtrlFlg6;
-extern DICtrl	DICtrlFlg7;
-extern DICtrl	DICtrlFlg8;
-extern DICtrl	DICtrlFlg9;
 
 extern  void TerminalDIHandle(void);
 extern  void TerminalDI1Handle(void);
 extern  void TerminalDI2Handle(void);
 extern  void TerminalDI3Handle(void);
 extern  void TerminalDI4Handle(void);
-extern  void TerminalDI5Handle(void);
-extern  void TerminalDI6Handle(void);
-extern  void TerminalDI7Handle(void);
-extern  void TerminalDI8Handle(void);
-extern  void TerminalDI9Handle(void);
 
 extern void TerminalDIServoOn(uint8_t DIPortInfo,uint8_t TerminalNum);
 extern void TerminalDIPOT(uint8_t DIPortInfo,uint8_t TerminalNum);

@@ -25,15 +25,10 @@ SW_SCAN_FUN ButtonDown;
 SW_SCAN_FUN ButtonShift;
 SW_SCAN_FUN ButtonMode;
 SW_SCAN_FUN ButtonSet;
-SW_SCAN_FUN DI9;
 SW_SCAN_FUN DI1;
 SW_SCAN_FUN DI2;
 SW_SCAN_FUN DI3;
 SW_SCAN_FUN DI4;
-SW_SCAN_FUN DI5;
-SW_SCAN_FUN DI6;
-SW_SCAN_FUN DI7;
-SW_SCAN_FUN DI8;
 
 //##########################################################################	
 // Code Start:
@@ -79,15 +74,10 @@ void InitScanDiSwitch(void)
   InitButtonSwitchTime(&ButtonSet);
 
   /*Terminal DI*/
-  InitDiSwitchTime(&DI9);
   InitDiSwitchTime(&DI1);
   InitDiSwitchTime(&DI2);
   InitDiSwitchTime(&DI3);
   InitDiSwitchTime(&DI4);
-  InitDiSwitchTime(&DI5);
-  InitDiSwitchTime(&DI6);
-  InitDiSwitchTime(&DI7);
-  InitDiSwitchTime(&DI8);
 }
 
 /**
@@ -386,16 +376,8 @@ void ReadDiPort(void)
 
   ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO1_GPIO_Port, DO1_Pin), NEGATIVE_LOGIC, &DI1); //0.9
   ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO2_GPIO_Port, DO2_Pin), NEGATIVE_LOGIC, &DI2); //0.10
-  ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO3_GPIO_Port, DO3_Pin), NEGATIVE_LOGIC, &DI9); //0.11
-  ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO4_GPIO_Port, DO4_Pin), NEGATIVE_LOGIC, &DI8); //0.12
-//	ReadDiPortInfo((uint8_t)MX_GPIO_ReadPin(IO004_Handle15),NEGATIVE_LOGIC,&DI7);//1.0
-//	ReadDiPortInfo((uint8_t)MX_GPIO_ReadPin(IO004_Handle30),NEGATIVE_LOGIC,&DI6);//1.10
-//	ReadDiPortInfo((uint8_t)MX_GPIO_ReadPin(IO004_Handle17),NEGATIVE_LOGIC,&DI5);//1.11
-//	ReadDiPortInfo((uint8_t)MX_GPIO_ReadPin(IO001_Handle12),NEGATIVE_LOGIC,&DI3);//15.2
-//	ReadDiPortInfo((uint8_t)MX_GPIO_ReadPin(IO001_Handle13),NEGATIVE_LOGIC,&DI4);//15.3
-
-  //Temp = MX_GPIO_ReadPin(IO001_Handle12);//P15.2,Encoder V Phase
-  //Temp = MX_GPIO_ReadPin(IO001_Handle13);//P15.3,Encoder W Phase
+  ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO3_GPIO_Port, DO3_Pin), NEGATIVE_LOGIC, &DI3); //0.11
+  ReadDiPortInfo((uint8_t) MX_GPIO_ReadPin(DO4_GPIO_Port, DO4_Pin), NEGATIVE_LOGIC, &DI4); //0.12
 }
 
 /**
@@ -414,18 +396,8 @@ void UpdateAllDiPort(void)
   ScanButton(&ButtonMode);
   ScanButton(&ButtonSet);
   /* DI Terminal Filter*/
-//    ScanDiSwitch(&DI9);
   ScanDiSwitch(&DI1);
   ScanDiSwitch(&DI2);
   ScanDiSwitch(&DI3);
   ScanDiSwitch(&DI4);
-//    ScanDiSwitch(&DI5);
-//    ScanDiSwitch(&DI6);
-//    ScanDiSwitch(&DI7);
-//    ScanDiSwitch(&DI8);
 }
-
-//############################################################################
-// No More.
-//############################################################################
-

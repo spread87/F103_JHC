@@ -4,12 +4,13 @@
  *  Created on: 2014-6-16
  *      Author: JH-LvSL
  */
-#include <main.h>			//Declarations from DAVE3 Code Generation (includes SFR declaration)
-#include "peri_PosiEasyPLC.h"
-#include <peri_GlobalVariablesExtern.h>
-#include <peri_PosiEasyPLC.h>
-#include <peri_TerminalDO.h>
-extern PosiPLC PosiPLCSeg;
+#include "main.h"
+#include "peri_GlobalVariablesExtern.h"
+#include "peri_TerminalDO.h"
+#include <stdlib.h>
+//#include "peri_PosiEasyPLC.h"
+
+//extern PosiPLC PosiPLCSeg;
 
 uint32_t DOAlarmSelect(uint32_t Fcode);
 
@@ -39,13 +40,13 @@ void TerminalDOServoRdy(void)
 	/*Servo Alarm*/
 	if(CoreStatusFlag.bit.ERR_ALL_STOP_F)
 	{
-		DOCtrlFlg.bit.ServoRdy = NG;//�й����ŷ�δ׼����
+		DOCtrlFlg.bit.ServoRdy = NG;//有故障伺服未准备好
 		return;
 	}
 
 	if(CoreStatusFlag.bit.RELAY_OK_F == NG)
 	{
-		DOCtrlFlg.bit.ServoRdy = NG;//�̵���δ׼����ʱ�ŷ�δ׼����
+		DOCtrlFlg.bit.ServoRdy = NG;//继电器未准备好时伺服未准备好
 		return;
 	}
 
@@ -60,7 +61,7 @@ void TerminalDOServoRdy(void)
 *************************************************/
 void TerminalDOExBrake(void)
 {
-	if(CoreStatusFlag.bit.EX_BRAKE_F)//�ƶ������
+	if(CoreStatusFlag.bit.EX_BRAKE_F)//制动管输出
 	{
 		DOCtrlFlg.bit.ExBrake = OK;
 	}
@@ -87,7 +88,7 @@ void PosiOKHoldTimeHandle(uint16_t id)
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOPosiOK(void)//��λ���������ź�
+void TerminalDOPosiOK(void)//定位结束脉冲信号
 {
 
 }
@@ -98,7 +99,7 @@ void TerminalDOPosiOK(void)//��λ���������ź�
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOSPDArvl(void)//5 �ٶȴﵽ����ֵ
+void TerminalDOSPDArvl(void)//5 速度达到设置值
 {
 	int32_t VelocityTemp = 0;
 
@@ -121,7 +122,7 @@ void TerminalDOSPDArvl(void)//5 �ٶȴﵽ����ֵ
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOTLimit(void)//������������ֵ
+void TerminalDOTLimit(void)//超过力矩限制值
 {
 	if(CoreStatusFlag.bit.TLIMIT_F)
 	{
@@ -161,7 +162,7 @@ void TerminalDOZSPD(void)//7
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOSPDCO(void)//�ٶ�  8
+void TerminalDOSPDCO(void)//速度  8
 {
 	uint32_t FcodeValue = 0;
 	int64_t VeloRefTemp = 0;
@@ -177,7 +178,7 @@ void TerminalDOSPDCO(void)//�ٶ�  8
 		return;
 	}
 
-	FcodeValue = FuncCode_Handle.Ram.F50.F5053;//�ٶ�һ�·�Χ
+	FcodeValue = FuncCode_Handle.Ram.F50.F5053;//速度一致范围
 	FcodeValue = FcodeValue * 10;
 	/*Velocity Target*/
 	//VeloRefTemp = (int64_t)g_VeloTargetQ24 * MotorPara.RatedVel ;
@@ -204,7 +205,7 @@ void TerminalDOSPDCO(void)//�ٶ�  8
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOSPDLimit(void)//ת��ģʽ������ֵ
+void TerminalDOSPDLimit(void)//转矩模式最大熟读值
 {
 	DOCtrlFlg.bit.SPDLimit = CoreStatusFlag.bit.SPDLIMIT_F;
 }
@@ -243,11 +244,11 @@ void TerminalDOPosiArvl(void)
   Return: No
   Others: Be Called TerminalDOFuncTable[]
 *************************************************/
-void TerminalDOAlmOut1(void)//�������ѡ��1
+void TerminalDOAlmOut1(void)//警告输出选择1
 {
 	uint32_t FcodeValue = 0;
 
-	FcodeValue = FuncCode_Handle.Ram.F50.F5057;//�������ѡ��1
+	FcodeValue = FuncCode_Handle.Ram.F50.F5057;//警告输出选择1
 
 //	FcodeValue = 3;//test
 
@@ -271,7 +272,7 @@ void TerminalDOAlmOut2(void)
 {
 	uint32_t FcodeValue = 0;
 
-	FcodeValue = FuncCode_Handle.Ram.F50.F5058;//�������ѡ��2
+	FcodeValue = FuncCode_Handle.Ram.F50.F5058;//警告输出选择2
 
 	if(DOAlarmSelect(FcodeValue))
 	{
@@ -313,7 +314,7 @@ void TerminalDOORZ(void)
 extern void PeriMotorBreakHandle(void);
 void TerminalDOMtBrake(void)
 {
-	//��������ֹͣ��ʱ����,δtest
+	//增加启动停止延时处理,未test
 	//DOCtrlFlg.bit.Run
 	PeriMotorBreakHandle();
 
@@ -380,7 +381,7 @@ void TerminalDOPulseOutput(void)
 
 
 
-void TerminalDOTORQArvl(void)//29 ת�شﵽ����ֵ
+void TerminalDOTORQArvl(void)//29 转矩达到设置值
 {
 
 }
@@ -586,31 +587,21 @@ void TerminalDOSpdUpdate(void)//7
 {
 	uint32_t FcodeValue = 0;
 
-	FcodeValue = FuncCode_Handle.Ram.F50.F5052 * 10;//���ٶ��趨
+	FcodeValue = FuncCode_Handle.Ram.F50.F5052 * 10;//零速度设定
 	//g_VelocityQ24_Zero = FcodeValue * MotorParaPU.RatedVel;
 	g_VelocityQ24_Zero = FcodeValue * 220;
 
-	FcodeValue = FuncCode_Handle.Ram.F50.F5054 *10;//�����ٶ�
+	FcodeValue = FuncCode_Handle.Ram.F50.F5054 *10;//到达速度
 	//g_VelocityQ24_Arv1 = FcodeValue * MotorParaPU.RatedVel;
 	g_VelocityQ24_Arv1 = FcodeValue * 220;
 
-	//FcodeValue = FuncCode_Handle.Ram.F40.F4065;//��������      20180904
+	//FcodeValue = FuncCode_Handle.Ram.F40.F4065;//到达力矩      20180904
 	//g_TorqueQ24_Arv1 = FcodeValue * 16777;//1000 ->IQ(1.0)
 
-	FcodeValue = FuncCode_Handle.Ram.F40.F4065 * 16777;//��������      20181008
-	g_TorqueQ24_Arv1 = (int32_t)(((int64_t)FcodeValue * g_MotorCurGain_1)>>24);;//1000 ->IQ(1.0)
+//	FcodeValue = FuncCode_Handle.Ram.F40.F4065 * 16777;//到达力矩      20181008
+//	g_TorqueQ24_Arv1 = (int32_t)(((int64_t)FcodeValue * g_MotorCurGain_1)>>24);;//1000 ->IQ(1.0)
 
-	g_TorqueArv1_Time = FuncCode_Handle.Ram.F40.F4066;//�������ؼ��ʱ��
-	g_TorqueLock_Time = FuncCode_Handle.Ram.F40.F4067;//���ص����������ʱ��
+//	g_TorqueArv1_Time = FuncCode_Handle.Ram.F40.F4066;//到达力矩检测时间
+//	g_TorqueLock_Time = FuncCode_Handle.Ram.F40.F4067;//力矩到达输出保持时间
 
 }
-
-
-
-
-
-
-
-
-
-

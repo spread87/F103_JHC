@@ -39,7 +39,7 @@ extern void TerminalDOTORQArvl(void);
 
 enum DOFUNC
 {
-	DISABLE = 0,
+  DO_DISABLE = 0,
 	SERVOALMOUTPUT, /*1Servo Alarm Output*/
 	SERVORDYOUTPUT, /*2Servo Ready Output*/
 	EXBRAKESIGNAL,/*3External Brake Release Signal*/
@@ -54,8 +54,8 @@ enum DOFUNC
 	ORIGINHOMECOMPLETE,/*12Origin Homing Mode Complete*/
 	POSITIONARRIVAL,/*13Position Arrival  Output*/
 	RUNFLG,//14 mxj
-	MOTORBRAKESIGNAL,//15µç´ÅÉ²³µ ±§Õ¢Êä³ö
-	ECAMSYNC,//16  //SERVOWARNNINGOUTPUT,//16¾¯¸æÊä³ö  20180519
+	MOTORBRAKESIGNAL,//15ï¿½ï¿½ï¿½É²ï¿½ï¿½ ï¿½ï¿½Õ¢ï¿½ï¿½ï¿½
+	ECAMSYNC,//16  //SERVOWARNNINGOUTPUT,//16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  20180519
 	DORESERVE4,//17
 	DORESERVE5,//18
 	DORESERVE6,//19
@@ -75,7 +75,7 @@ enum DOFUNC
 	DORESERVE33,//33
 	DORESERVE34,//34
 	DORESERVE35,//35
-	SERVOWARNNINGOUTPUT,//36¾¯¸æÊä³ö
+	SERVOWARNNINGOUTPUT,//36ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 };
 
@@ -124,8 +124,8 @@ enum DOALMOUTPUT
 	WARNNOT,       		//40
 	WARNOL,             //41  over-load warn
 	WARNOT,				//42 over-temperature warn
-	WARNPOOS,	     	//43 Âö³åÊä³ö¹ýËÙ
-	WARNAELV,      		//44 ¾ø¶ÔÖµ±àÂëÆ÷µç³ØÇ·Ñ¹
+	WARNPOOS,	     	//43 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	WARNAELV,      		//44 ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·Ñ¹
 	ALMMTRSEOT,      //45
 	ALMMTRSEOS,      //46
 	ALMMTRSERL,      //47
