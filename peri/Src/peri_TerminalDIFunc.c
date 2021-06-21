@@ -7,7 +7,7 @@
 #include <main.h>
 #include <peri_GlobalVariablesExtern.h>
 
-DICtrl DICtrlFlg1; //9���������
+DICtrl DICtrlFlg1; //9个输入端子
 DICtrl DICtrlFlg2;
 DICtrl DICtrlFlg3;
 DICtrl DICtrlFlg4;

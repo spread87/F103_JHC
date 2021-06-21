@@ -43,10 +43,10 @@ extern void PanelLEDDisplay(void);
 #define OPE_7SEG_LED_H   0x8B    /*'H'*/
 #define OPE_7SEG_LED_I   0xFB    /*'I'*/
 #define OPE_7SEG_LED_J   0xE1    /*'J'*/
-#define OPE_7SEG_LED_K   0x85    /*'K'*///ԭ����89
+#define OPE_7SEG_LED_K   0x85    /*'K'*///原来是89
 #define OPE_7SEG_LED_L   0xC7    /*'L'*/
-#define OPE_7SEG_LED_M   0xAA    /*'M'*/ //ԭ����E0
-#define OPE_7SEG_LED_N   0xAB    /*'N'*///ԭ����C8
+#define OPE_7SEG_LED_M   0xAA    /*'M'*/ //原来是E0
+#define OPE_7SEG_LED_N   0xAB    /*'N'*///原来是C8
 #define OPE_7SEG_LED_O   0xA3    /*'O'*/
 #define OPE_7SEG_LED_P   0x8C    /*'P'*/
 #define OPE_7SEG_LED_Q   0x98    /*'Q'*/
@@ -54,7 +54,7 @@ extern void PanelLEDDisplay(void);
 #define OPE_7SEG_LED_S   0x92    /*'S'*/
 #define OPE_7SEG_LED_T   0xCE    /*'T'*/
 #define OPE_7SEG_LED_U   0xC1    /*'U'*/
-#define OPE_7SEG_LED_V   0x81    /*'V'*///ԭ����E3
+#define OPE_7SEG_LED_V   0x81    /*'V'*///原来是E3
 #define OPE_7SEG_LED_W   0xE2    /*'W'*///C4
 #define OPE_7SEG_LED_X   0x95    /*'X'*///E7
 #define OPE_7SEG_LED_Y   0x91    /*'Y'*/

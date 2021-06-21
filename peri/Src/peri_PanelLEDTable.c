@@ -49,7 +49,7 @@ const uint8_t PanelLEDTable[] =
 		OPE_7SEG_LED_SP, //'_'  37
 		OPE_7SEG_LED_ZP //'-'  38
 };
-//������ʾ���
+//故障显示添加
 const uint8_t PanelAlmTable[][5] =
 {
 	/*No Alarm*/

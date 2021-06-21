@@ -36,11 +36,11 @@
 #define    OUTPUT_DIR        1
 #define    OUTPUT_CCW        0
 
-//#define    g_CurrentLoopTc   100  //100us ��������
-#define    g_CurrentLoopTc   125  //125us ��������
-#define    g_VelocityloopTc  0x2800000 //0.25ms*10  �ٶȻ�����
-//#define    g_VelocityloopTc  0x5000000 //0.5ms*10 �ٶȻ�����
-#define    VelocityLPFTime   2000//2000us �ݶ���ô��
+//#define    g_CurrentLoopTc   100  //100us 运行周期
+#define    g_CurrentLoopTc   125  //125us 运行周期
+#define    g_VelocityloopTc  0x2800000 //0.25ms*10  速度环周期
+//#define    g_VelocityloopTc  0x5000000 //0.5ms*10 速度环周期
+#define    VelocityLPFTime   2000//2000us 暂定这么多
 #define 	OK 	 1
 #define 	NG	 0
 #define  POSITIONCTRL    0
@@ -217,10 +217,10 @@ extern int64_t 		g_filterVd;
 extern int64_t 		g_filterVq;
 
 extern uint32_t 	g_PwmPeriod;//Pwm Period Reg
-extern uint32_t    g_LdValueQ24;//Ld�ı�������
-extern uint32_t    g_LqValueQ24;//Lq�ı�����;
-extern uint32_t    g_FluxfQ24;//Fluxf�ı�������
-extern uint32_t    g_OverLoadFactor;//����ϵ��
+extern uint32_t    g_LdValueQ24;//Ld的标幺量；
+extern uint32_t    g_LqValueQ24;//Lq的标幺量;
+extern uint32_t    g_FluxfQ24;//Fluxf的标幺量；
+extern uint32_t    g_OverLoadFactor;//过载系数
 extern uint64_t    g_index_counter;
 extern uint16_t    timer_count;
 extern uint16_t    g_timer_count;
@@ -232,7 +232,7 @@ extern uint32_t    g_PulsesPerRevolution;
 extern uint32_t    g_VelocityKpCalc;
 extern uint32_t    g_SpecialSave;
 extern uint32_t    g_VelocityKpAdjust;
-extern int32_t     g_JogRefQ24;//�㶯�ٶȸ���
+extern int32_t     g_JogRefQ24;//点动速度给定
 extern int32_t     g_InertiaRefQ24;
 extern uint64_t    g_InertiaQ24;
 extern uint8_t     g_JogRunDw;
@@ -242,8 +242,8 @@ extern uint8_t     g_JogRunDwButton;
 extern int32_t     g_JogTargetQ24;
 extern int32_t     g_JogACCStepValueQ24;
 extern int32_t     g_JogDECStepValueQ24;
-extern int32_t     g_OutputPulses;//��������������ƽ
-extern int32_t     g_OutputDir;//��������ķ����ƽ
+extern int32_t     g_OutputPulses;//脉冲输出的脉冲电平
+extern int32_t     g_OutputDir;//脉冲输出的方向电平
 extern const  uint32_t    DriveCurrentGain[];
 extern int32_t     g_MotorCurGain;
 extern int32_t     g_MotorCurGain_1;
@@ -260,13 +260,13 @@ extern uint32_t	g_MotorInitAngleQ24;
 
 //extern uint8_t		AlmRecord_Time;
 
-extern FORCEDIONEN          ForceDIOnEn;//ONʹ��
-extern FORCEDIOFFEN         ForceDIOffEn;//OFFʹ��
+extern FORCEDIONEN          ForceDIOnEn;//ON使能
+extern FORCEDIOFFEN         ForceDIOffEn;//OFF使能
 extern uint32_t             g_DIForceOn;
 extern uint32_t             g_DIForceOff;
 
-extern FORCEDOONEN          ForceDOOnEn;//ONʹ��
-extern FORCEDOOFFEN         ForceDOOffEn;//OFFʹ��
+extern FORCEDOONEN          ForceDOOnEn;//ON使能
+extern FORCEDOOFFEN         ForceDOOffEn;//OFF使能
 
 /******Function Variable Define*****/
 extern uint16_t 	g_CtrlMode;	//From External Set
@@ -449,7 +449,7 @@ extern int64_t gSHomePullIN;
 extern  int32_t g_FLAG;
 extern  int32_t g_FLAG1;
 extern  int32_t g_FLAG2;
-extern SHomeFlg SHomeFlag; //ԭ��ع��־λ
+extern SHomeFlg SHomeFlag; //原点回归标志位
 extern  SHomePara SHomeParameter;
 extern SeriEnc SeriEncoder;
 

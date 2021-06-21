@@ -40,7 +40,8 @@ extern I2C_HandleTypeDef hi2c2;
 void MX_I2C2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+HAL_StatusTypeDef MX_I2cwriteByte(uint8_t *pData, uint16_t Size);
+HAL_StatusTypeDef MX_I2cReadByte(uint8_t *pData, uint16_t Size);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

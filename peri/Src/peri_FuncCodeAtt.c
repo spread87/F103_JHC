@@ -10,36 +10,36 @@
 
 /*Description Function Code Attribute
  *
- * bit0��
- * 		0��open
- * 		1��hide
+ * bit0：
+ * 		0：open
+ * 		1：hide
  * bit1:
- * 		0�����Իָ�����ֵ
- *			1�����ɻָ�����ֵ
- * bit2��
- *			0��unsigned
- *			1��signed
- * bit3��bit4��
- * 		0����ת�п��޸�
- * 		1����ת�в����޸�/ͣ�����޸�
- * 		2�������ϵ���޸���Ч
- * 		3��ֻ��/�����޸�
- * bit5��
- * 		0��Decimal
- * 		1��Hex
- * bit6��bit7��
- * 		0��no point
- * 		1��one bit point
- * 		2��ten bit point
-* 			3��hundred bit point
+ * 		0：可以恢复出厂值
+ *			1：不可恢复出厂值
+ * bit2：
+ *			0：unsigned
+ *			1：signed
+ * bit3，bit4：
+ * 		0：运转中可修改
+ * 		1：运转中不可修改/停机可修改
+ * 		2：重新上电后修改有效
+ * 		3：只读/不可修改
+ * bit5：
+ * 		0：Decimal
+ * 		1：Hex
+ * bit6，bit7：
+ * 		0：no point
+ * 		1：one bit point
+ * 		2：ten bit point
+* 			3：hundred bit point
  * bit8:
- * 		1��be changed
- * 		0��not be changed
- * bit9,bit10��
- * 		0��one byte
- * 		1��two bytes
- * 		2��three bytes
- * 		3��four bytes
+ * 		1：be changed
+ * 		0：not be changed
+ * bit9,bit10：
+ * 		0：one byte
+ * 		1：two bytes
+ * 		2：three bytes
+ * 		3：four bytes
  *  bit11:
  *  		0:  Max(data) <= 99999
  *  		1:  Max(data) > 99999
@@ -204,6 +204,41 @@ FuncCodeSingleF10 FC_AttF10=
 	0x0000,		//F1047
 	0x0000,     //F1048
 	0x0020      //F1049  0->0x20 20171128
+};
+
+/**Function Code Group F20 Attribute Value**/
+FuncCodeSingleF20 FC_AttF20=
+{
+	0x0240,		//F2000
+	0x0240,		//F2001
+	0x0200,		//F2002
+	0x0200,		//F2003
+	0x0200,		//F2004
+	0x0200,		//F2005
+	0x0200,		//F2006
+	0x0200,		//F2007
+	0x0200,		//F2008
+	0x0200,		//F2009
+	0x0200,		//F2010
+	0x0200,		//F2011
+	0x0200,		//F2012
+	0x0200,		//F2013
+	0x0200,		//F2014
+	0x0200,		//F2015
+	0x0200,		//F2016
+	0x0200,		//F2017
+	0x0200,		//F2018
+	0x0200,     //F2019
+	0x0200,     //F2020
+	0x0200,     //F2021
+	0x0200,     //F2022
+	0x0200,     //F2023
+	0x0200,     //F2024
+	0x0200,     //F2025
+	0x0200,     //F2026
+	0x0200,		//F2027
+	0x0200,     //F2028
+	0x0200      //F2029
 };
 
 /**Function Code Group F50 Attribute Value**/

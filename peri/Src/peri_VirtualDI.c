@@ -23,8 +23,8 @@ void FuncDIHandle(void)
   g_DIsts = DI1.flg.bit.DI_sta_F | (DI2.flg.bit.DI_sta_F << 1) | (DI3.flg.bit.DI_sta_F << 2)
       | (DI4.flg.bit.DI_sta_F << 3);
 
-  TerminalDIHandle(); //IO�����봦��͸����ܱ�־λ����
-  VirtualDIHandle(); //����DI1-DI9��ȷ����λ������ ������֧���µĹ���
+  TerminalDIHandle();//IO口输入处理和各功能标志位生成
+  VirtualDIHandle();//根据DI1-DI9来确定上位机功能 ，不能支持新的功能
 }
 
 void VirtualDIHandle(void)

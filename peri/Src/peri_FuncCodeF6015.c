@@ -31,7 +31,7 @@ int32_t g_LEDRunTime;
 *************************************************/
 void FuncCodeF6015Init(void)
 {
-	//g_RunTime = FuncCode_Handle.Ram.F00.F0013;//�ⲻ�Ƕ������
+	//g_RunTime = FuncCode_Handle.Ram.F00.F0013;//这不是额定力矩吗
 }
 
 /*************************************************
@@ -208,6 +208,3 @@ void RunTimeStatistics(void)
 		g_PowerUpTime++;
 	}
 }
-
-
-

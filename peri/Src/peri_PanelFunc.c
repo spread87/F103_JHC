@@ -15,23 +15,21 @@
 uint8_t g_MenuGrade = 0;	//0: Main Menu; 1: 1st Menu; 2:2nd Menu
 uint32_t g_1stDisplayData = 0;
 uint32_t g_2ndDisplayData = 0;
-uint32_t g_3ndDisplayData = 0;	//����1��
+uint32_t g_3ndDisplayData = 0;	//增加1级
 uint8_t g_1sttwinkle = 3;
 uint8_t g_2ndtwinkle = 0;
 uint8_t g_2ndSetDataSts = 0;	//Return Status After Function Code be Set
 PANELFCODE Fcode;
 
 //int32_t PanelButtonUp(int32_t Data,int32_t Max,int32_t twinkle);
-int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex,
-    int32_t twinkle);	//2010628 mxj
+int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex, int32_t twinkle);	//2010628 mxj
 //int32_t PanelButtonDown(int32_t Data,int32_t Min,int32_t twinkle);
-int32_t PanelButtonDown(int32_t Data, int32_t Min, uint8_t Dec_Hex,
-    int32_t twinkle);	//2010628 mxj
+int32_t PanelButtonDown(int32_t Data, int32_t Min, uint8_t Dec_Hex, int32_t twinkle);	//2010628 mxj
 int32_t PanelButtonShift(int32_t Data, int32_t Max);
 int32_t PanelButtonMode(int32_t MenuGrade);
 int32_t PanelButtonSet(int32_t MenuGrade, uint32_t Data, uint16_t Fcode);
-void PanelButtonUpFunc(void);	//JOGģʽ
-void PanelButtonDwFunc(void);	//JOGģʽ
+void PanelButtonUpFunc(void);	//JOG模式
+void PanelButtonDwFunc(void);	//JOG模式
 
 #define JOG_FUNCTION     1
 #define SAVE_FUNCTION    2
@@ -40,7 +38,6 @@ void Panel1stMenuDisplay(void);
 void Panel2ndMenuDisplay(void);
 void Panel3ndMenuDisplay(void);
 void Panel3ndFuncDisplay(void);
-
 void Panel2ndMenuDisplaySts(uint8_t Sts);
 extern const uint8_t FuncTable[][5];
 extern uint8_t LED[6];
@@ -48,10 +45,10 @@ extern BUTTONFLG ButtonFlagLong;
 
 const PANEL_FUNC PanelDisplay[] =
 {
-  PanelMainMenuDisplay,	//������
-  Panel1stMenuDisplay,	//��һ���˵�
-  Panel2ndMenuDisplay,	//�ڶ����˵�
-  Panel3ndMenuDisplay,	//�������˵�
+  PanelMainMenuDisplay,	//主界面
+  Panel1stMenuDisplay,	//第一级菜单
+  Panel2ndMenuDisplay,	//第二级菜单
+  Panel3ndMenuDisplay,	//第三级菜单
   NULL_FUNC
 };
 
@@ -79,8 +76,16 @@ LEDDISPLAY PanelDataDisplayTable[] =
 const uint16_t FcodeGroupNum[] =
 {
   FCODE_F00_Num,
+  FCODE_F10_Num,
+  FCODE_F20_Num,
+  FCODE_F30_Num,
+//  FCODE_F40_Num,
+  FCODE_F50_Num,
   FCODE_F60_Num,
-  FCODE_FA0_Num
+//  FCODE_F70_Num,
+//  FCODE_F80_Num,
+//  FCODE_F90_Num,
+//  FCODE_FA0_Num
 };
 
 /*************************************************
@@ -102,7 +107,7 @@ void PanelLEDButtonHandle(void)
     LED[3] = 0x89;	//H
     LED[4] = OPE_7SEG_LED_ZP;	//"-"
   }
-  PanelLEDDisplay();	//LED��ʾ�Ͱ�ť��ȡ
+  PanelLEDDisplay();	//LED显示和按钮读取
 }
 /*************************************************
  Function: Panel Main Menu Display
@@ -117,30 +122,29 @@ void PanelMainMenuDisplay(void)
   static uint8_t DisplayMode = 0;		//0:display alm 1:display data
   static uint8_t DisplayDataHL = 0; //0:Low bytes data,1: High bytes data
 
-  //if(FuncCode_Handle.Ram.F00.F0006 <= 999)//��������λ��ʾ
-  if (FuncCode_Handle.Ram.F00.F0009 <= 999) //��ѹ���޸���100V������ʾ��λ
+  //if(FuncCode_Handle.Ram.F00.F0006 <= 999)//电流用三位显示
+  if (FuncCode_Handle.Ram.F00.F0009 <= 999) //电压上限高于100V电流显示两位
   {
     PanelDataDisplayTable[0].Att = 0x1C;
   }
 
-  temp = FuncCode_Handle.Ram.F60.F6015; //��ʼ״̬
-  if (g_AlmNum) //�й��ϵ�ʱ��
+  temp = FuncCode_Handle.Ram.F60.F6015; //初始状态
+  if (g_AlmNum) //有故障的时候
   {
     if (!DisplayMode)
       PanelAlmDisplay(g_AlmNum); //error display
     else
-      PanelDataDisplay(*PanelDataDisplayTable[temp].add,
-          PanelDataDisplayTable[temp].Att, DisplayDataHL, &CoreStatusFlag);
+      PanelDataDisplay(*PanelDataDisplayTable[temp].add, PanelDataDisplayTable[temp].Att, DisplayDataHL,
+          &CoreStatusFlag);
     if (ButtonShift.flg.bit.DI_OUT_F)
     {
       DisplayMode = ~DisplayMode;
       ButtonShift.flg.bit.DI_OUT_F = 0;
     }
   }
-  else //�޹��ϵ�ʱ��
+  else //无故障的时候
   {
-    PanelDataDisplay(*PanelDataDisplayTable[temp].add,
-        PanelDataDisplayTable[temp].Att, DisplayDataHL, &CoreStatusFlag);
+    PanelDataDisplay(*PanelDataDisplayTable[temp].add, PanelDataDisplayTable[temp].Att, DisplayDataHL, &CoreStatusFlag);
   }
 
   g_1stDisplayData = 0;
@@ -178,7 +182,7 @@ void Panel1stMenuDisplay(void)
   HundredBit = (int32_t) g_1stDisplayData / 100;
   TenOneBit = (int32_t) g_1stDisplayData % 100;
 
-  FcodeNumLength = sizeof(FcodeGroupNum) / sizeof(FcodeGroupNum[0]);//���ֽ���/�����ֽ���
+  FcodeNumLength = sizeof(FcodeGroupNum) / sizeof(FcodeGroupNum[0]);	//总字节数/单个字节数
   g_1sttwinkle = (uint8_t) PanelButtonShift((int32_t) g_1sttwinkle, 3);
 
   if (ButtonUp.flg.bit.DI_OUT_F)
@@ -242,7 +246,7 @@ void Panel1stMenuDisplay(void)
 
   Fcode.FcodeNum = (uint16_t) HundredBit * 1000 + (uint16_t) (TenOneBit);
   /*Read Fcode Relative Value*/
-  FuncCodePanelRead(&Fcode);	//����2���˵���ֵ
+  FuncCodePanelRead(&Fcode);	//读出2级菜单的值
   g_2ndDisplayData = Fcode.Value;
 }
 /*************************************************
@@ -257,38 +261,33 @@ void Panel2ndMenuDisplay(void)
   static uint16_t Sts_Count = 0;
 
   /*Read Fcode Data Length*/
-  if ((Fcode.Att >> 11) & 0x01)	//�ƶ�10λ����5λ
-    g_2ndtwinkle = (uint8_t) PanelButtonShift((int32_t) g_2ndtwinkle,
-        (int32_t) 10);
+  if ((Fcode.Att >> 11) & 0x01)	//移动10位还是5位
+    g_2ndtwinkle = (uint8_t) PanelButtonShift((int32_t) g_2ndtwinkle, (int32_t) 10);
   else
-    g_2ndtwinkle = (uint8_t) PanelButtonShift((int32_t) g_2ndtwinkle,
-        (int32_t) 5);
+    g_2ndtwinkle = (uint8_t) PanelButtonShift((int32_t) g_2ndtwinkle, (int32_t) 5);
 
   /* Key 'UP' Process */
   //g_2ndDisplayData = PanelButtonUp(g_2ndDisplayData,Fcode.Max,g_2ndtwinkle);
-  g_2ndDisplayData = PanelButtonUp(g_2ndDisplayData, Fcode.Max,
-      (Fcode.Att >> 5) & 0x01, g_2ndtwinkle);	//2010628 mxj
+  g_2ndDisplayData = PanelButtonUp(g_2ndDisplayData, Fcode.Max, (Fcode.Att >> 5) & 0x01, g_2ndtwinkle);	//2010628 mxj
   /* Key 'DOWN' Process */
   //g_2ndDisplayData = PanelButtonDown(g_2ndDisplayData,Fcode.Min,g_2ndtwinkle);
-  g_2ndDisplayData = PanelButtonDown(g_2ndDisplayData, Fcode.Min,
-      (Fcode.Att >> 5) & 0x01, g_2ndtwinkle);	//2010628 mxj
+  g_2ndDisplayData = PanelButtonDown(g_2ndDisplayData, Fcode.Min, (Fcode.Att >> 5) & 0x01, g_2ndtwinkle);	//2010628 mxj
   /*	Key 'SET' Process*/
-  g_MenuGrade = PanelButtonSet((int32_t) g_MenuGrade, g_2ndDisplayData,
-      Fcode.FcodeNum);
+  g_MenuGrade = PanelButtonSet((int32_t) g_MenuGrade, g_2ndDisplayData, Fcode.FcodeNum);
   /* Key 'MODE' Process*/
   g_MenuGrade = PanelButtonMode(g_MenuGrade);
 
-  if (g_3ndDisplayData != 0)	//�������˵���ʾ
+  if (g_3ndDisplayData != 0)	//第三级菜单显示
   {
     Panel3ndFuncDisplay();
   }
-  else //�����˵�����ʾ
+  else //二级菜单的显示
   {
-    if (g_2ndSetDataSts & 0x80) //������ʾ
+    if (g_2ndSetDataSts & 0x80) //保存显示
     {
       /*Status Display When Key 'Set' is used in the 2nd menu*/
       Sts_Count++;
-      Panel2ndMenuDisplaySts(g_2ndSetDataSts & 0X7F); //����״̬��ʾ��only read,save�ȵȣ�����ʱ��1.5S
+      Panel2ndMenuDisplaySts(g_2ndSetDataSts & 0X7F); //保存状态显示，only read,save等等，持续时间1.5S
 
       /* Status Display 1.5s*/
       if (Sts_Count > 1500)
@@ -302,21 +301,20 @@ void Panel2ndMenuDisplay(void)
     {
       if (((Fcode.Att >> 3) & 0x03) == 0x03)  //only read mode
         g_2ndDisplayData = FuncCodeOnlyReadValue(&Fcode);
-      Panel2ndMenuDataDisplay(g_2ndDisplayData, g_2ndtwinkle, Fcode.Att); //������ʾ
+      Panel2ndMenuDataDisplay(g_2ndDisplayData, g_2ndtwinkle, Fcode.Att);  //正常显示
     }
   }
 }
 
-void Panel3ndMenuDisplay()  //���ݹ�����ʾ��0 �ޣ� 1��JOG
+void Panel3ndMenuDisplay()  //根据功能显示，0 无， 1。JOG
 {
-
   Panel3ndFuncDisplay();
   g_MenuGrade = PanelButtonMode(g_MenuGrade);
   PanelButtonUpFunc();
   PanelButtonDwFunc();
 }
 
-//���ղ�ͬ���ܽ�����ʾ
+//按照不同功能进行显示
 void Panel3ndFuncDisplay()
 {
   static uint16_t DisplayCount = 0;
@@ -330,13 +328,13 @@ void Panel3ndFuncDisplay()
     LED[3] = OPE_7SEG_LED_E;
     LED[4] = OPE_7SEG_LED_NULL;
   }
-  else  //�����
+  else  //待添加
   {
     switch (func)
     {
     case JOG_FUNCTION:
     {
-      if (!Inertia_status.bitflag.bit.run_now)  //�ǹ�����ѧϰ
+      if (!Inertia_status.bitflag.bit.run_now)  //非惯量自学习
       {
         LED[0] = FuncTable[func - 1][0];
         LED[1] = FuncTable[func - 1][1];
@@ -344,7 +342,7 @@ void Panel3ndFuncDisplay()
         LED[3] = FuncTable[func - 1][3];
         LED[4] = FuncTable[func - 1][4];
       }
-      else  //������ѧϰ
+      else  //惯量自学习
       {
         DisplayCount++;  //20181011
         if ((DisplayCount & 0x0100) || (Inertia_status.study_times <= 10))
@@ -356,7 +354,7 @@ void Panel3ndFuncDisplay()
     }
     case SAVE_FUNCTION:
     {
-      if (g_SpecialSave != 0)  //��ȡ������
+      if (g_SpecialSave != 0)  //存取过程中
       {
         LED[0] = FuncTable[func - 1][0];
         LED[1] = FuncTable[func - 1][1];
@@ -365,7 +363,7 @@ void Panel3ndFuncDisplay()
         LED[4] = FuncTable[func - 1][4];
         break;
       }
-      else  //��ȡ���
+      else  //存取完毕
       {
         //g_MenuGrade--;
         g_MenuGrade -= 2;  //mxj
@@ -438,8 +436,7 @@ void PanelButtonDwFunc()
  Return: No
  Others: Be Called Panel1stMenuDisplay()/Panel2ndMenuDisplay()
  *************************************************/
-int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex,
-    int32_t twinkle)  //2010628 mxj
+int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex, int32_t twinkle)  //2010628 mxj
 {
   int32_t Data_Add_Mpy;
 
@@ -483,33 +480,29 @@ int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex,
         Data = Max;
       break;
     case 6:
-      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy);
+      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data > Max)
         Data = Max;
       break;
     case 7:
-      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy);
+      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data > Max)
         Data = Max;
       break;
     case 8:
-      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
+      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data > Max)
         Data = Max;
       break;
     case 9:
-      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
+      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
+          * Data_Add_Mpy);
       if (Data > Max)
         Data = Max;
       break;
     case 10:
-      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy);
+      Data += (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
+          * Data_Add_Mpy * Data_Add_Mpy);
       if (Data > Max)
         Data = Max;
       break;
@@ -530,8 +523,7 @@ int32_t PanelButtonUp(int32_t Data, int32_t Max, uint8_t Dec_Hex,
  Return: No
  Others: Be Called Panel1stMenuDisplay()/Panel2ndMenuDisplay()
  *************************************************/
-int32_t PanelButtonDown(int32_t Data, int32_t Min, uint8_t Dec_Hex,
-    int32_t twinkle)  //2010628 mxj
+int32_t PanelButtonDown(int32_t Data, int32_t Min, uint8_t Dec_Hex, int32_t twinkle)  //2010628 mxj
 {
   int32_t Data_Add_Mpy;
 
@@ -575,33 +567,29 @@ int32_t PanelButtonDown(int32_t Data, int32_t Min, uint8_t Dec_Hex,
         Data = Min;
       break;
     case 6:
-      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy);
+      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data < Min)
         Data = Min;
       break;
     case 7:
-      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy);
+      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data < Min)
         Data = Min;
       break;
     case 8:
-      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
+      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
       if (Data < Min)
         Data = Min;
       break;
     case 9:
-      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy);
+      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
+          * Data_Add_Mpy);
       if (Data < Min)
         Data = Min;
       break;
     case 10:
-      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
-          * Data_Add_Mpy);
+      Data -= (Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy * Data_Add_Mpy
+          * Data_Add_Mpy * Data_Add_Mpy);
       if (Data < Min)
         Data = Min;
       break;
@@ -645,13 +633,13 @@ int32_t PanelButtonMode(int32_t MenuGrade)
 {
   if (ButtonMode.flg.bit.DI_OUT_F)
   {
-    if (g_3ndDisplayData == JOG_FUNCTION)  //jog�˳�
+    if (g_3ndDisplayData == JOG_FUNCTION)  //jog退出
     {
       g_3ndDisplayData = 0;
-      FuncCode_Handle.Ram.F10.F1032 = 0;
-      FuncCode_Handle.E2prom.F10.F1032 = 0;
+      FuncCode_Handle.Ram.F30.F3001 = 0;
+      FuncCode_Handle.E2prom.F30.F3001 = 0;
     }
-    else if (g_3ndDisplayData == SAVE_FUNCTION)  //�˳� SAVE 3���˵�
+    else if (g_3ndDisplayData == SAVE_FUNCTION)  //退出 SAVE 3级菜单
     {
       g_3ndDisplayData = 0;
       FuncCode_Handle.Ram.F10.F1001 = 0;
@@ -673,10 +661,10 @@ int32_t PanelButtonMode(int32_t MenuGrade)
  Return: No
  Others: Be Called Panel1stMenuDisplay()/Panel2ndMenuDisplay()
  *************************************************/
-int32_t PanelButtonSet(int32_t MenuGrade, uint32_t Data, uint16_t Fcode) //data���޸ĵ�ֵ��fcode�ǵ�ַ
+int32_t PanelButtonSet(int32_t MenuGrade, uint32_t Data, uint16_t Fcode)  //data是修改的值，fcode是地址
 {
   uint8_t Status = 0;
-  if (ButtonSet.flg.bit.DI_OUT_F)  //set����Ч
+  if (ButtonSet.flg.bit.DI_OUT_F)  //set键有效
   {
     if ((MenuGrade == 1) || (MenuGrade == 0))
     {
@@ -685,11 +673,11 @@ int32_t PanelButtonSet(int32_t MenuGrade, uint32_t Data, uint16_t Fcode) //data�
     }
     else
     {
-      //����Ӹ��ֹ��ܣ���ʱֻ��JOGģʽ
-      if ((Fcode == 3001) && (Data == 1))   //�㶯RAMֵ�޸ģ����Ϊ1����������
+      //待添加各种功能，暂时只有JOG模式
+      if ((Fcode == 3001) && (Data == 1))   //点动RAM值修改，如果为1则进入第三层
       {
-        FuncCode_Handle.Ram.F10.F1032 = 1;
-        FuncCode_Handle.E2prom.F10.F1032 = 1;
+        FuncCode_Handle.Ram.F30.F3001 = 1;
+        FuncCode_Handle.E2prom.F30.F3001 = 1;
         g_3ndDisplayData = JOG_FUNCTION;
         MenuGrade++;  //MenuGrade = 3;
       }
@@ -700,18 +688,18 @@ int32_t PanelButtonSet(int32_t MenuGrade, uint32_t Data, uint16_t Fcode) //data�
           FuncCode_Handle.Ram.F10.F1001 = Data;
           FuncCode_Handle.E2prom.F10.F1001 = Data;
           //g_3ndDisplayData = SAVE_FUNCTION;
-          g_SpecialSave = Data;  //�����ȡ
+          g_SpecialSave = Data;  //特殊存取
         }
         g_3ndDisplayData = SAVE_FUNCTION;
         MenuGrade++;
       }
       else  //	MenuGrade = 2;
       {
-        Status = (uint8_t) FuncCodeChange(Fcode, Data, &FuncCode_Handle, OK); //�޸��ڴ浥Ԫֵ
+        Status = (uint8_t) FuncCodeChange(Fcode, Data, &FuncCode_Handle, OK);  //修改内存单元值
         g_2ndSetDataSts = Status | 0x80;
       }
     }
-    ButtonSet.flg.bit.DI_OUT_F = 0;  //���set��
+    ButtonSet.flg.bit.DI_OUT_F = 0;  //清空set键
   }
 
   return MenuGrade;

@@ -46,28 +46,18 @@ void PanelInit(void)
 }
 
 /*************************************************
- Function: Panel LED&Button Handle
- Description:
- Input: No
- Return: No
- Others: Be Called SysCore1msLoop()
- *************************************************/
-void PanelLEDButtonHandle1(void)
-{
-}
-/*************************************************
  Function: Panel Button Identity
  Description:
  Input: No
  Return: No
  Others: Be Called PanelDataShift()
  *************************************************/
-static void PanelButtonIdentity(uint8_t button)
+static void PanelButtonIdentity(uint8_t button) //修改这个函数，识别长按
 {
   uint32_t temp;
 
-  ButtonFlagOld.all = ButtonFlag.all; //��������������
-  ButtonFlag.all = ~button; //��������������
+  ButtonFlagOld.all = ButtonFlag.all; //上周的
+  ButtonFlag.all = ~button; //这周的
   if ((!ButtonFlagOld.bit.up) & (!ButtonFlag.bit.up))
   {
     ButtonCounts.up++;
@@ -130,6 +120,7 @@ static void PanelButtonIdentity(uint8_t button)
   temp = temp & 0x1f;
   temp = temp & 0x1f;
   temp = ButtonFlagLong.all;
+  //取得的按钮信息
 }
 
 /*************************************************
@@ -241,13 +232,11 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
     if ((Data / 10000) % 10)
     {
       if (point == 4)
-        LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)]
-            & OPE_7SEG_LED_DP;
+        LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)] & OPE_7SEG_LED_DP;
       else
         LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)];
       if (point == 3)
-        LED[1] =
-            PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
+        LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
       else
         LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)];
       if (point == 2)
@@ -265,8 +254,7 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
     {
       if (point == 4)
       {
-        LED[0] = (PanelLEDTable[(uint8_t) ((Data / 10000) % 10)])
-            & OPE_7SEG_LED_DP;
+        LED[0] = (PanelLEDTable[(uint8_t) ((Data / 10000) % 10)]) & OPE_7SEG_LED_DP;
         LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)];
         LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)];
         LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)];
@@ -278,18 +266,15 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
         if ((Data / 1000) % 10)
         {
           if (point == 3)
-            LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)]
-                & OPE_7SEG_LED_DP;
+            LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
           else
             LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)];
           if (point == 2)
-            LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)]
-                & OPE_7SEG_LED_DP;
+            LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)] & OPE_7SEG_LED_DP;
           else
             LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)];
           if (point == 1)
-            LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)]
-                & OPE_7SEG_LED_DP;
+            LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)] & OPE_7SEG_LED_DP;
           else
             LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)];
           LED[4] = PanelLEDTable[(uint8_t) (Data % 10)];
@@ -299,8 +284,7 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
         {
           if (point == 3)
           {
-            LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)]
-                & OPE_7SEG_LED_DP;
+            LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
             LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)];
             LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)];
             LED[4] = PanelLEDTable[(uint8_t) (Data % 10)];
@@ -311,13 +295,11 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
             if ((Data / 100) % 10)
             {
               if (point == 2)
-                LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)]
-                    & OPE_7SEG_LED_DP;
+                LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)] & OPE_7SEG_LED_DP;
               else
                 LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)];
               if (point == 1)
-                LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)]
-                    & OPE_7SEG_LED_DP;
+                LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)] & OPE_7SEG_LED_DP;
               else
                 LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)];
               LED[4] = PanelLEDTable[(uint8_t) (Data % 10)];
@@ -327,8 +309,7 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
             {
               if (point == 2)
               {
-                LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)]
-                    & OPE_7SEG_LED_DP;
+                LED[2] = PanelLEDTable[(uint8_t) ((Data / 100) % 10)] & OPE_7SEG_LED_DP;
                 LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)];
                 LED[4] = PanelLEDTable[(uint8_t) (Data % 10)];
               }
@@ -336,8 +317,7 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
               {
                 LED[2] = PanelLEDTable[36]; //'NUll'
                 if (point == 1)
-                  LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)]
-                      & OPE_7SEG_LED_DP;
+                  LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)] & OPE_7SEG_LED_DP;
                 else
                 {
                   if ((Data / 10) % 10)
@@ -365,8 +345,7 @@ void PanelLEDdata(uint32_t Data, uint8_t point, uint8_t DataHL, uint8_t HighFlg)
  Return: No
  Others: Be Called PanelMainMenuDisplay()
  *************************************************/
-void PanelDataDisplay(int32_t DataValue, uint32_t Att, uint8_t DataHL,
-    CoreStatusFlg *p)
+void PanelDataDisplay(int32_t DataValue, uint32_t Att, uint8_t DataHL, CoreStatusFlg *p)
 {
   static uint16_t DisplayCount = 0;
   uint32_t ary = 0, point = 0, length = 0, sign = 0;
@@ -552,7 +531,7 @@ void Panel2ndMenuDataDisplay(int32_t DValue, uint8_t twinkle, uint32_t Att)
 
   if (!twinkle)
   {
-    if (Att & 0x0020)	//������������������16������������
+    if (Att & 0x0020)	//判断是否为16进制
     {
       LED[0] = PanelLEDTable[(uint8_t) ((Data >> 16) & 0xF)];
       LED[1] = PanelLEDTable[(uint8_t) ((Data >> 12) & 0xF)];
@@ -569,9 +548,9 @@ void Panel2ndMenuDataDisplay(int32_t DValue, uint8_t twinkle, uint32_t Att)
       }
     }
   }
-  else	//LED��������������������
+  else	//LED闪烁处理
   {
-    if (Att & 0x0020)	//������������������16��������������
+    if (Att & 0x0020)	//判断是否为16进制，
     {
       LED[0] = PanelLEDTable[(uint8_t) ((Data >> 16) & 0xF)];
       LED[1] = PanelLEDTable[(uint8_t) ((Data >> 12) & 0xF)];
@@ -583,13 +562,11 @@ void Panel2ndMenuDataDisplay(int32_t DValue, uint8_t twinkle, uint32_t Att)
     {
 
       if (point == 4)
-        LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)]
-            & OPE_7SEG_LED_DP;
+        LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)] & OPE_7SEG_LED_DP;
       else
         LED[0] = PanelLEDTable[(uint8_t) ((Data / 10000) % 10)];
       if (point == 3)
-        LED[1] =
-            PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
+        LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)] & OPE_7SEG_LED_DP;
       else
         LED[1] = PanelLEDTable[(uint8_t) ((Data / 1000) % 10)];
       if (point == 2)
@@ -606,8 +583,7 @@ void Panel2ndMenuDataDisplay(int32_t DValue, uint8_t twinkle, uint32_t Att)
       {
         if (twinkle > 5)
         {
-          LED[3] =
-              PanelLEDTable[(uint8_t) ((Data / 10) % 10)] & OPE_7SEG_LED_DP;
+          LED[3] = PanelLEDTable[(uint8_t) ((Data / 10) % 10)] & OPE_7SEG_LED_DP;
           LED[4] = PanelLEDTable[(uint8_t) (Data % 10)] & OPE_7SEG_LED_DP;
         }
         else
@@ -648,7 +624,7 @@ void Panel2ndMenuDataDisplay(int32_t DValue, uint8_t twinkle, uint32_t Att)
       break;
     }
   }
-  if ((DValue < 0) && (Att >> 2) & 0x01)//add point when the datavalue is lower then 0
+  if ((DValue < 0) && (Att >> 2) & 0x01)	//add point when the datavalue is lower then 0
   {
     LED[0] = LED[0] & OPE_7SEG_LED_DP;
     //LED[1] = LED[1] & OPE_7SEG_LED_DP;

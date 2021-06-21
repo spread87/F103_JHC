@@ -49,7 +49,7 @@ void (*const TerminalDIFuncHandle[])(uint8_t DIPortInfo, uint8_t TerminalNum) =
   TerminalDISORPOS,//23
   TerminalDIPJOG,//24
   TerminalDINJOG,//25
-  TerminalDIMTRDIR,//26	���ת������
+  TerminalDIMTRDIR,	//26	电机转向输入
   TerminalDIINER1,//27
   TerminalDIINER2,//28
   TerminalDIINER3,//29
@@ -64,10 +64,10 @@ void (*const TerminalDIFuncHandle[])(uint8_t DIPortInfo, uint8_t TerminalNum) =
   TerminalDIECAMRSVD38,//38
   TerminalDIECAMRSVD39,//39
   TerminalDIECAMRSVD40,//40
-  TerminalDIPLICH1,//41	ָ���л�����1
-  TerminalDIPLICH2,//42	ָ���л�����2
-  TerminalDIPLICH3,//43	ָ���л�����3
-  TerminalPIHLSWITCH,//44	������л�����
+  TerminalDIPLICH1,		//41	指令切换输入1
+  TerminalDIPLICH2,		//42	指令切换输入2
+  TerminalDIPLICH3,		//43	指令切换输入3
+  TerminalPIHLSWITCH,		//44	脉冲口切换输入
   NULL_FUNC
 };
 
@@ -130,8 +130,8 @@ static const TERMINALDI_FUNC TerminalSynthesis[] =
 void TerminalDIHandle(void)
 {
   TerminalDIStartFuncHandle_New();		//20190922
-  TerminalDIStartFuncHandle(TerminalDIProcessTable);		//����IO�ڸ�ֵ����
-  TerminalDIFuncSynthesis(TerminalSynthesis);		//��־λ����
+  TerminalDIStartFuncHandle(TerminalDIProcessTable);		//输入IO口赋值处理
+  TerminalDIFuncSynthesis(TerminalSynthesis);		//标志位生成
 }
 /*************************************************
  Function: Terminal DI Function Handle
@@ -185,8 +185,8 @@ void TerminalDI1Handle(void)
 
   if (FcodeValue != 0)
   {
-    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//���������ĸ�����
-    (*TerminalFunc)(tempDISta, NumDI1);		//�����ض����ܸ���һ������ṹ�帳ֵ
+    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//决定调用哪个功能
+    (*TerminalFunc)(tempDISta, NumDI1);		//按照特定功能给第一个输入结构体赋值
   }
 }
 /*************************************************
@@ -210,8 +210,8 @@ void TerminalDI2Handle(void)
 
   if (FcodeValue != 0)
   {
-    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//���������ĸ�����
-    (*TerminalFunc)(tempDISta, NumDI2);		//�����ض����ܸ���һ������ṹ�帳ֵ
+    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//决定调用哪个功能
+    (*TerminalFunc)(tempDISta, NumDI2);		//按照特定功能给第一个输入结构体赋值
   }
 }
 /*************************************************
@@ -235,8 +235,8 @@ void TerminalDI3Handle(void)
 
   if (FcodeValue != 0)
   {
-    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//���������ĸ�����
-    (*TerminalFunc)(tempDISta, NumDI3);		//�����ض����ܸ���һ������ṹ�帳ֵ
+    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//决定调用哪个功能
+    (*TerminalFunc)(tempDISta, NumDI3);		//按照特定功能给第一个输入结构体赋值
   }
 }
 /*************************************************
@@ -260,8 +260,8 @@ void TerminalDI4Handle(void)
 
   if (FcodeValue != 0)
   {
-    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//���������ĸ�����
-    (*TerminalFunc)(tempDISta, NumDI4);		//�����ض����ܸ���һ������ṹ�帳ֵ
+    TerminalFunc = TerminalDIFuncHandle[(FcodeValue - 1)];		//决定调用哪个功能
+    (*TerminalFunc)(tempDISta, NumDI4);		//按照特定功能给第一个输入结构体赋值
   }
 }
 
@@ -273,8 +273,8 @@ void TerminalDIStartFuncHandle_New(void)		//20191024
 
   uint32_t tempMasker = FuncCode_Handle.Ram.F50.F5009 >> 8;
 
-  tempVirDIForeON = (uint16_t) (ForceDIOnEn.all); //����DI ON
-  tempVirDIForeOFF = (uint16_t) (ForceDIOffEn.all); //����DI OFF
+  tempVirDIForeON = (uint16_t) (ForceDIOnEn.all); //虚拟DI ON
+  tempVirDIForeOFF = (uint16_t) (ForceDIOffEn.all); //虚拟DI OFF
 
   g_DIAddVir_sts = tempVirDIForeON | ((~tempVirDIForeON) & (~tempVirDIForeOFF) & (tempDIsts ^ tempMasker)); //d=a+(/a)(/b)(c^d)
 }

@@ -31,6 +31,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "peri_Init.h"
+#include <peri_Periodic.h>
 
 /* USER CODE END Includes */
 
@@ -63,14 +64,6 @@ static void MX_NVIC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-static void mdelay(unsigned xms)
-{
-	unsigned int i, j;
-
-	for (i = 0; i < xms; i++)
-		for(j = 0; j < 1000; j++) ;;;
-}
 
 /* USER CODE END 0 */
 

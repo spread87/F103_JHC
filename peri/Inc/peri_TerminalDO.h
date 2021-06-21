@@ -54,8 +54,8 @@ enum DOFUNC
 	ORIGINHOMECOMPLETE,/*12Origin Homing Mode Complete*/
 	POSITIONARRIVAL,/*13Position Arrival  Output*/
 	RUNFLG,//14 mxj
-	MOTORBRAKESIGNAL,//15���ɲ�� ��բ���
-	ECAMSYNC,//16  //SERVOWARNNINGOUTPUT,//16�������  20180519
+	MOTORBRAKESIGNAL,//15电磁刹车 抱闸输出
+	ECAMSYNC,//16  //SERVOWARNNINGOUTPUT,//16警告输出  20180519
 	DORESERVE4,//17
 	DORESERVE5,//18
 	DORESERVE6,//19
@@ -75,7 +75,7 @@ enum DOFUNC
 	DORESERVE33,//33
 	DORESERVE34,//34
 	DORESERVE35,//35
-	SERVOWARNNINGOUTPUT,//36�������
+	SERVOWARNNINGOUTPUT,//36警告输出
 
 };
 
@@ -124,8 +124,8 @@ enum DOALMOUTPUT
 	WARNNOT,       		//40
 	WARNOL,             //41  over-load warn
 	WARNOT,				//42 over-temperature warn
-	WARNPOOS,	     	//43 �����������
-	WARNAELV,      		//44 ����ֵ���������Ƿѹ
+	WARNPOOS,	     	//43 脉冲输出过速
+	WARNAELV,      		//44 绝对值编码器电池欠压
 	ALMMTRSEOT,      //45
 	ALMMTRSEOS,      //46
 	ALMMTRSERL,      //47

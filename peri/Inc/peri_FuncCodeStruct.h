@@ -168,6 +168,85 @@ typedef struct FuncCodeSingleF10
 
 }FuncCodeSingleF10;
 
+typedef struct FuncCodeSingleF20
+{
+	uint32_t F2000;				//1st gain of position loop
+	uint32_t F2001;				//1st gain of velocity loop
+	uint32_t F2002;				//1st time constant of velocity loop integration
+	uint32_t F2003;				//1st filter of speed detection
+	uint32_t F2004;				//1st time constant of torque filter
+	uint32_t F2005;				//2nd gain of position loop
+	uint32_t F2006;				//2nd gain of velocity loop
+	uint32_t F2007;				//2nd time constant of velocity loop integration
+	uint32_t F2008;				//2nd filter of speed detection
+	uint32_t F2009;				//2nd time constant of torque filter
+	uint32_t F2010;				//Gain of velocity feed forward
+	uint32_t F2011;				//Filter of velocity feed forward
+	uint32_t F2012;				//Gain of torque feed forward
+	uint32_t F2013;				//Filter of torque feed forward
+	uint32_t F2014;				//Mode of position control switching
+	uint32_t F2015;				//Delay time of position control switching
+	uint32_t F2016;				//Level of position control switching
+	uint32_t F2017;				//Hysteresis of position control switching
+	uint32_t F2018;				//Position gain switching time
+	uint32_t F2019;
+	uint32_t F2020;
+	uint32_t F2021;
+	uint32_t F2022;
+	uint32_t F2023;
+	uint32_t F2024;
+	uint32_t F2025;
+	uint32_t F2026;
+	uint32_t F2027;
+	uint32_t F2028;
+	uint32_t F2029;
+
+}FuncCodeSingleF20;
+
+typedef struct FuncCodeSingleF30
+{
+	uint32_t F3000;				//1st notch frequency
+	uint32_t F3001;				//1st notch width selection
+	uint32_t F3002;				//2nd notch frequency
+	uint32_t F3003;				//2nd notch width selection
+	uint32_t F3004;				//3rd notch frequency
+	uint32_t F3005;				//3rd notch width selection
+	uint32_t F3006;				//4th notch frequency
+	uint32_t F3007;				//4th notch width selection
+	uint32_t F3008;				//One-step time constant of position command
+	uint32_t F3009;
+	uint32_t F3010;
+	uint32_t F3011;
+	uint32_t F3012;
+	uint32_t F3013;
+	uint32_t F3014;
+	uint32_t F3015;
+	uint32_t F3016;
+	uint32_t F3017;
+	uint32_t F3018;
+	uint32_t F3019;
+	uint32_t F3020;
+	uint32_t F3021;
+	uint32_t F3022;
+	uint32_t F3023;
+	uint32_t F3024;
+	uint32_t F3025;
+	uint32_t F3026;
+	uint32_t F3027;
+	uint32_t F3028;
+	uint32_t F3029;
+	uint32_t F3030;
+	uint32_t F3031;
+	uint32_t F3032;
+	uint32_t F3033;
+	uint32_t F3034;
+	uint32_t F3035;
+	uint32_t F3036;
+	uint32_t F3037;
+	uint32_t F3038;
+	uint32_t F3039;
+
+}FuncCodeSingleF30;
 typedef struct FuncCodeSingleF50
 {
 	uint32_t F5000;				//DI1 input selection
@@ -388,6 +467,8 @@ typedef struct FuncCodeGroup
 {
 	FuncCodeSingleF00 F00;
 	FuncCodeSingleF10 F10;
+	FuncCodeSingleF20 F20;
+	FuncCodeSingleF30 F30;
 	FuncCodeSingleF50 F50;
 	FuncCodeSingleF60 F60;
 	FuncCodeSingleFA0 FA0;
