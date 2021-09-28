@@ -18,73 +18,13 @@
 #include <peri_FuncCodeHandle.h>
 #include <peri_GlobalVariablesExtern.h>
 #include <stdbool.h>
-#include "i2c.h"
+#include "eeprom_26l64.h"
+#include "i2c_bsp.h"
 
 uint32_t g_SpecialSave = 0;
 
-/*************************************************
- Function:EEPROM write byte
- Description:
- Input: No
- Return: No
- Others: No
- *************************************************/
-void EepromWriteByte(uint8_t AddH, uint8_t AddL, uint8_t Data)
-{
-  uint8_t data[4];
-
-  data[0] = 0xA0;	//write mode
-  data[1] = AddH;
-  data[2] = AddL;
-  data[3] = Data;
-
-  MX_I2cwriteByte(data, 4);
-}
-
-/*************************************************
- Function:EEPROM write byte per page continouly
- Description:
- Input: No
- Return: No
- Others: No
- *************************************************/
-void EepromPageWriteByte(uint8_t AddH, uint8_t AddL, uint8_t *table, uint8_t Length)
-{
-  uint8_t data[35];
-  uint8_t i;
-
-  data[0] = 0xA0; //write mode
-  data[1] = AddH;
-  data[2] = AddL;
-
-  for (i = 0; i < Length; i++)
-  {
-    data[3 + i] = table[i];
-  }
-
-  MX_I2cwriteByte(data, Length + 3);
-}
-
-/*************************************************
- Function:EEPROM read byte
- Description:
- Input: No
- Return: No
- Others: No
- *************************************************/
-uint8_t EepromReadByte(uint8_t AddH, uint8_t AddL)
-{
-  uint8_t data[4];
-
-  data[0] = 0xA0; //write mode
-  data[1] = AddH;
-  data[2] = AddL;
-  data[3] = 0xA1;	//read mode
-  MX_I2cwriteByte(data, 4);
-  MX_I2cReadByte(data, 1);
-
-  return data[0];
-}
+static int EepromWriteByte(uint8_t AddH, uint8_t AddL, uint8_t data);
+static int EepromReadByte(uint8_t AddH, uint8_t AddL, uint16_t len, uint8_t *rx_buf);
 
 /*************************************************
  Function:EEPROM read one function code (32bit)
@@ -95,7 +35,6 @@ uint8_t EepromReadByte(uint8_t AddH, uint8_t AddL)
  *************************************************/
 uint32_t EepromReadFcode(uint16_t FcodeNum)
 {
-  uint8_t data[4];
   uint32_t value = 0;
   uint8_t AddH, AddL;
 
@@ -103,15 +42,7 @@ uint32_t EepromReadFcode(uint16_t FcodeNum)
   AddH = (uint8_t) ((FcodeNum >> 8) & 0xFF);
   AddL = (uint8_t) (FcodeNum & 0xFF);
 
-  data[0] = 0xA0; //write mode
-  data[1] = AddH;
-  data[2] = AddL;
-  data[3] = 0xA1; //read mode
-  MX_I2cwriteByte(data, 4);
-  MX_I2cReadByte(data, 4);
-
-  value = (((uint32_t) data[3] << 24) & 0xff000000) | (((uint32_t) data[2] << 16) & 0xff0000)
-      | (((uint32_t) data[1] << 8) & 0xff00) | ((uint32_t) data[0] & 0xff);
+  EepromReadByte(AddH, AddL, 4, &value);
 
   return value;
 }
@@ -131,16 +62,15 @@ void EepromWriteFcode(uint16_t FcodeNum, uint32_t value)
   FcodeNum = FcodeNum * 4 - 4;
   AddH = (uint8_t) ((FcodeNum >> 8) & 0xFF);
   AddL = (uint8_t) (FcodeNum & 0xFF);
+  data[0]=(uint8_t)(value&0x000000FF);
+  data[1]=(uint8_t)((value>>8)&0x000000FF);
+  data[2]=(uint8_t)((value>>16)&0x000000FF);
+  data[3]=(uint8_t)((value>>24)&0x000000FF);
 
-  data[0] = 0xA0; //write mode
-  data[1] = AddH;
-  data[2] = AddL;
-  data[3] = (uint8_t) ((value >> 24) & 0xff);
-  data[4] = (uint8_t) ((value >> 16) & 0xff);
-  data[5] = (uint8_t) ((value >> 8) & 0xff);
-  data[6] = (uint8_t) (value & 0xff);
-
-  MX_I2cwriteByte(data, 7);
+  EepromWriteByte(AddH,AddL,data[0]);
+  EepromWriteByte(AddH,AddL,data[1]);
+  EepromWriteByte(AddH,AddL,data[2]);
+  EepromWriteByte(AddH,AddL,data[3]);
 }
 
 /*************************************************
@@ -157,12 +87,20 @@ void EepromInit(void)
   uint8_t counter = 0;
   int32_t value;
   static uint8_t ErrReadValueCount = 0;
+  int n = 0;
+
+  IIC_init( );
+
+  while (!Isok_i2c_Device())
+    if (n++ > 500)
+      udelay(2000);
 
   for (counter = 0; counter < 5; counter++)	//the last address 8K e2prom,最好多读几遍，防止误操作
   {
-    if (207 == EepromReadByte(31, 255))
+    EepromReadByte(31, 255, 1, &Test);
+
+    if (207 == Test)
     {
-      Test = 207;
       break;
     }
   }
@@ -332,4 +270,44 @@ void FcodeValueToEEPROM(void)			//write value to e2prom
   }
   //g_FcodeChangeFlag = 0;
   g_FcodeChangeFlag--;
+}
+
+static int EepromWriteByte(uint8_t AddH, uint8_t AddL, uint8_t data)
+{
+  uint8_t tx_buf[3];
+  int ret;
+  uint8_t temp = 0;
+
+  tx_buf[0] = AddH;
+  tx_buf[1] = AddL;
+  tx_buf[2] = data;
+
+  /* setp 1. read current addr value */
+  {
+    IIC_Read_Buffer(2, tx_buf, 1, &temp);
+    if (temp == data)
+      ret = 1;
+    else
+      ret = IIC_Write_Buffer(3, tx_buf);
+    IIC_Read_Buffer(2, tx_buf, 1, &temp);
+    if (temp == data)
+      ret = 1;
+    else
+      ret = 0;
+  }
+
+  return !ret;
+}
+
+static int EepromReadByte(uint8_t AddH, uint8_t AddL, uint16_t len, uint8_t *rx_buf)
+{
+  uint8_t tx_buf[2];
+  int ret = 0;
+
+  tx_buf[0] = AddH;
+  tx_buf[1] = AddL;
+
+  ret = IIC_Read_Buffer(2, tx_buf, len, rx_buf);
+
+  return !ret;
 }

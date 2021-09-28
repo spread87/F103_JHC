@@ -19,11 +19,11 @@ void ModbusCMDIlgFuncV20(void);
 void FrameByteLoad(uint16_t *DataLength, uint8_t byte1, uint8_t byte2);
 
 extern int16_t Wave13[5];
-extern int16_t WaveA[1000];
-extern int16_t WaveB[1000];
-extern int16_t WaveC[1000];
-extern int16_t WaveD[1000];
-//extern int16_t WaveE[1000];
+extern int16_t WaveA[100];
+extern int16_t WaveB[100];
+extern int16_t WaveC[100];
+extern int16_t WaveD[100];
+
 extern void Wave_dis(void);
 
 const uint8_t FrameErrTable[]=

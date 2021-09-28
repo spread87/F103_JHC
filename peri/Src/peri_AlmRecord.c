@@ -7,6 +7,7 @@
 #include <main.h>			//Declarations from DAVE3 Code Generation (includes SFR declaration)
 #include <peri_GlobalVariablesExtern.h>
 #include <peri_E2promHandle.h>
+#include <stdlib.h>
 
 int32_t AlarmRcdTable[90];
 AlmRcd AlmRecord;

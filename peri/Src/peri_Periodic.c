@@ -198,9 +198,6 @@ void SysCore100usLoop(void)	//静止不动最长100US
  */
 void SysMainLoop(void)
 {
-//	static uint32_t BaseTimer = 0;
-  int64_t temp;
-
   static uint8_t MainLoopCnt = 0;
   MainLoopCnt++;
 
@@ -241,9 +238,6 @@ void SysMainLoop(void)
     MainLoopCnt = 0;
     break;
   }
-
-//	USBReceiveHandle();
-//	USBSendHandle();
 
   AlmReadNum();			//20170106,moved from 1msloop
 

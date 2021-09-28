@@ -16,7 +16,7 @@ void InitModule(void)
 {
   PanelInit();		//panel shift clk1,clk2
   FuncCodeInit();		//code init，min,max,att
-  EepromInit();		//FuncCode init ;from table or e2prom
+  //EepromInit();		//FuncCode init ;from table or e2prom
   InitScanDiSwitch();
 
   AlmRcdRead();		//read alarm
