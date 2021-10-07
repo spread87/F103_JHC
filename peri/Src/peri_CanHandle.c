@@ -9,9 +9,16 @@
 #include "peri_CanHandle.h"
 #include "peri_VeloEasyPLC.h"
 
+extern CAN_HandleTypeDef hcan;
+
 uint8_t CanData[8] = { 11, 22, 33, 44, 55, 66, 77, 88 };
 uint32_t Cnt_Can_1ms = 0;
 CanCmn CanTransmitData;
+CAN_TxHeaderTypeDef   TxHeader;
+CAN_RxHeaderTypeDef   RxHeader;
+uint8_t               TxData[8];
+uint8_t               RxData[8];
+uint32_t              TxMailbox;
 
 static void CanChannelHandle(void);
 
@@ -31,15 +38,55 @@ static const CanValue CanValueTable[] =
 
 void CANInit(void)
 {
-  //CAN001_Handle0.BaudRate.BaudRatePresc = 0x0b;	//固定波特率125k
-  //CAN001_MessageHandle0_1.Identifier = 0X100 + FuncCode_Handle.Ram.F60.F6019;	//CAN监控发送ID 借用时间报文
+  CAN_FilterTypeDef  sFilterConfig;
 
+  /* Configure the CAN Filter */
+  sFilterConfig.FilterBank = 0;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = 0x0000;
+  sFilterConfig.FilterIdLow = 0x0000;
+  sFilterConfig.FilterMaskIdHigh = 0x0000;
+  sFilterConfig.FilterMaskIdLow = 0x0000;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+
+  if (HAL_CAN_ConfigFilter(&hcan, &sFilterConfig) != HAL_OK)
+  {
+    /* Filter configuration Error */
+    Error_Handler();
+  }
+
+
+  /* Start the CAN peripheral */
+  if (HAL_CAN_Start(&hcan) != HAL_OK)
+  {
+    /* Start Error */
+    Error_Handler();
+  }
+
+  /* Activate CAN RX notification */
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+  {
+    /* Notification Error */
+    Error_Handler();
+  }
+
+  /* Configure Transmission process */
+  TxHeader.StdId = 0x321;
+  TxHeader.ExtId = 0x01;
+  TxHeader.RTR = CAN_RTR_DATA;
+  TxHeader.IDE = CAN_ID_STD;
+  TxHeader.DLC = 2;
+  TxHeader.TransmitGlobalTime = DISABLE;
+
+#if 0
+  CAN001_MessageHandle0_1.Identifier = 0X100 + FuncCode_Handle.Ram.F60.F6019;	//CAN监控发送ID 借用时间报文
   //充电机CAN测试
-  //CAN001_MessageHandle0_2.Identifier = 0X1307C080 + FuncCode_Handle.Ram.F60.F6024;	//CAN主发送ID
-  //CAN001_MessageHandle0_3.Identifier = 0X1207C080 + FuncCode_Handle.Ram.F60.F6024;	//CAN主接收ID
-
-  //CAN001_Init(); // Initialization of app 'CAN001'
-  //WR_REG(CAN_NODE1->NPCR, CAN_NODE_NPCR_RXSEL_Msk, CAN_NODE_NPCR_RXSEL_Pos, RXD_SIGNAL2);
+  CAN001_MessageHandle0_2.Identifier = 0X1307C080 + FuncCode_Handle.Ram.F60.F6024;	//CAN主发送ID
+  CAN001_MessageHandle0_3.Identifier = 0X1207C080 + FuncCode_Handle.Ram.F60.F6024;	//CAN主接收ID
+#endif
   //CAN_Handle1_NODE();
 
   CanTransmitData.Can_Step = 0;
@@ -47,7 +94,29 @@ void CANInit(void)
   CanTransmitData.Can_Number = 1;
 }
 
-void CanSend(void)
+/**
+  * @brief  Rx Fifo 0 message pending callback in non blocking mode
+  * @param  CanHandle: pointer to a CAN_HandleTypeDef structure that contains
+  *         the configuration information for the specified CAN.
+  * @retval None
+  */
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *CanHandle)
+{
+  /* Get RX message */
+  if (HAL_CAN_GetRxMessage(CanHandle, CAN_RX_FIFO0, &RxHeader, RxData) != HAL_OK)
+  {
+    /* Reception Error */
+    Error_Handler();
+  }
+
+  /* Display LEDx */
+  if ((RxHeader.StdId == 0x321) && (RxHeader.IDE == CAN_ID_STD) && (RxHeader.DLC == 2))
+  {
+    //ubKeyNumber = RxData[0];
+  }
+}
+
+static void CanSend(void)
 {
   uint8_t tempCanData[8];
   int64_t Temp;
@@ -106,10 +175,8 @@ void CanSend(void)
     }
 
     //*********************************************************************20200601
-    //if((g_VrmsCalc - g_Vrms_Cmd)>= (FuncCode_Handle.Ram.F00.F0006>>4) )//the  6.25% of Rated volt
     if ((g_VrmsCalc - g_Vrms_Cmd) >= (int32_t) (FuncCode_Handle.Ram.F00.F0006 >> 5))		//the  3.125% of Rated volt
     {
-      //Temp = g_VrmsCalc - g_Vrms_Cmd;
       Temp = FuncCode_Handle.Ram.F00.F0010;		////the min current
     }
     else if (g_VrmsCalc < FuncCode_Handle.Ram.F00.F0008)		//the min volt
@@ -127,15 +194,10 @@ void CanSend(void)
 
     if (Temp > g_Irms_Cmd)
       Temp = g_Irms_Cmd;		//电流设定
-
     g_Irms_Cmd_A = Temp;
-    //********************************************************************20200601
-
     Temp = (uint32_t) Temp * 100;
-
     if (Temp > 220000)		//20200408   current CMD limit is changed to be 220A.
       Temp = 220000;
-
     if (Temp != Curr_Cmd)
     {
       Curr_Cmd = Temp;
@@ -208,6 +270,7 @@ void CanSend(void)
 
   //CAN001_UpdateMODataRegisters(&CAN001_Handle0, 2, 8, tempCanData); //发送数据
   //CAN001_SendDataFrame(&CAN001_Handle0, 2); //发送监控指令
+
   FuncCode_Handle.Ram.FA0.FA054 = (uint32_t) tempCanData[0] + ((uint32_t) tempCanData[1] << 8)
       + ((uint32_t) tempCanData[2] << 16) + ((uint32_t) tempCanData[3] << 24);
 
@@ -255,18 +318,18 @@ void CanResive(void)
 
   ChargerStatusFlg ChargerStatusFlag;
 
-  //if ((CAN001_GetMOFlagStatus(&CAN001_Handle0, 3, RECEIVE_PENDING | NEW_DATA))) //接收数据
+  if(1) //((CAN001_GetMOFlagStatus(&CAN001_Handle0, 3, RECEIVE_PENDING | NEW_DATA))) //接收数据
   {
     //FuncCode_Handle.Ram.FA0.FA058 += CAN001_ReadMsgObj(&CAN001_Handle0, &CAN001_MessageHandle0_3, 3) * 10;
 
-    //data0 = CAN001_MessageHandle0_3.data[0];
-    //data1 = CAN001_MessageHandle0_3.data[1];
-    //data2 = CAN001_MessageHandle0_3.data[2];
-    //data3 = CAN001_MessageHandle0_3.data[3];
-    //data4 = CAN001_MessageHandle0_3.data[4];
-    //data5 = CAN001_MessageHandle0_3.data[5];
-    //data6 = CAN001_MessageHandle0_3.data[6];
-    //data7 = CAN001_MessageHandle0_3.data[7];
+//    data0 = CAN001_MessageHandle0_3.data[0];
+//    data1 = CAN001_MessageHandle0_3.data[1];
+//    data2 = CAN001_MessageHandle0_3.data[2];
+//    data3 = CAN001_MessageHandle0_3.data[3];
+//    data4 = CAN001_MessageHandle0_3.data[4];
+//    data5 = CAN001_MessageHandle0_3.data[5];
+//    data6 = CAN001_MessageHandle0_3.data[6];
+//    data7 = CAN001_MessageHandle0_3.data[7];
 
     switch (CanTransmitData.Can_Step)
     {
@@ -334,6 +397,7 @@ void CanResive(void)
           else
             RUN_Cnt++;
         }
+        //***********************************************************************
       }
       break;
 
@@ -343,10 +407,12 @@ void CanResive(void)
 
     CanTransmitData.Can_ReceiveNo_Cnt = 0;
     AlarmStatusFlag.bit.Motor.SEDC = 0;
+
     g_canview22 = g_PulInCan << 8;
+
     FuncCode_Handle.Ram.FA0.FA055 = g_PulInCan + (g_SpdInCan << 6);	//FA-55 is HEX,the low 16bit is g_PulInCan,the high is g_SpdInCan
   }
-  //else
+  else
   {
     CanTransmitData.Can_ReceiveNo_Cnt++;
     FuncCode_Handle.Ram.FA0.FA056++;
@@ -415,6 +481,7 @@ void CanHandle(void)
     else
     {
       Cnt_Can_1ms = 0;
+      //g_NoValue = -16777216;
       CanChannelHandle();
       /* Update data value to be transmitted by  Node "Request" in message object 1 (LM01) with ID 0x101 */
       //CAN001_UpdateMODataRegisters(&CAN001_Handle0, 1, 8, CanData);
@@ -483,26 +550,22 @@ void CanUpdateHandle(void)
 
   Temp = FcodeValue / 1000000;
   CanTransmitData.channel1 = Temp % 100;
-
   Temp = FcodeValue / 10000;
   CanTransmitData.channel2 = Temp % 100;
-
   Temp = FcodeValue / 100;
   CanTransmitData.channel3 = Temp % 100;
-
   Temp = FcodeValue;
   CanTransmitData.channel4 = Temp % 100;
   CanTransmitData.tempCanMonEn = FuncCode_Handle.Ram.F60.F6026 % 1000; //CAN上位机监控功能使能 兼具发送时间间隔功能
-
   Temp = FuncCode_Handle.Ram.F60.F6026 / 1000;
   CanTransmitData.tempCanMSEn = Temp / 100;
   CanTransmitData.tempCanMREn = Temp % 100;
 }
 
-int16_t WaveA[100] = { 0 };
-int16_t WaveB[100] = { 0 };
-int16_t WaveC[100] = { 0 };
-int16_t WaveD[100] = { 0 };
+int16_t WaveA[10] = { 0 };
+int16_t WaveB[10] = { 0 };
+int16_t WaveC[10] = { 0 };
+int16_t WaveD[10] = { 0 };
 
 void Wave_dis(void)	//1ms程序调用  0x22特殊指令用
 {
@@ -525,7 +588,7 @@ void Wave_dis(void)	//1ms程序调用  0x22特殊指令用
         WaveC[i] = (*CanValueTable[CanTransmitData.channel3].add >> 10);
         WaveD[i] = (*CanValueTable[CanTransmitData.channel4].add >> 10);
 
-        if (i < 999)
+        if (i < 9)
         {
           i++;
         }

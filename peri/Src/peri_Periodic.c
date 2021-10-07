@@ -155,8 +155,8 @@ void SysCore1msLoop(void)
 
     PanelLEDButtonHandle();
     //UART_Test_Handle();//20180419 ���ݽ���
-    //ModbusHandle();//20180419
-    //CanHandle();//20180716������  20180725
+    ModbusHandle();    //20180419
+    CanHandle();    //20180716调试用  20180725
     Wave_dis();		//20181229
 
     return;
@@ -207,7 +207,7 @@ void SysMainLoop(void)
   {
   case 1:
     AlmCheckMotorandDriver();//20170420 mxj
-    //CanUpdateHandle();//20170420 mxj
+    CanUpdateHandle();//20170420 mxj
     break;
   case 2:
     //TerminalDOSetHandle();//20170420 mxj

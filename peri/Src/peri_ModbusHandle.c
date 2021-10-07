@@ -19,10 +19,10 @@ void ModbusCMDIlgFuncV20(void);
 void FrameByteLoad(uint16_t *DataLength, uint8_t byte1, uint8_t byte2);
 
 extern int16_t Wave13[5];
-extern int16_t WaveA[100];
-extern int16_t WaveB[100];
-extern int16_t WaveC[100];
-extern int16_t WaveD[100];
+extern int16_t WaveA[10];
+extern int16_t WaveB[10];
+extern int16_t WaveC[10];
+extern int16_t WaveD[10];
 
 extern void Wave_dis(void);
 

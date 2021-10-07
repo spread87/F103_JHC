@@ -51,6 +51,11 @@ int32_t g_VelocityQ24_Zero = 0;
 int32_t g_Velocity10msFilQ24 = 0;
 int32_t g_Velocity10times = 0;	//Display 10 Times Zoom
 
+int64_t 	g_PulInCan = 0;
+int32_t		g_SpdInCan = 0;
+int32_t		g_IqInCan = 0;
+int32_t		g_SendcntCan = 0;
+int32_t		g_CmdInCan = 0;
 int64_t g_PulInAllCount;
 int64_t g_EncPulAllCount;
 int64_t g_PosiFeedback;
@@ -68,7 +73,11 @@ int32_t 	g_CurRefQ24_Foc = 0;//External Set Value
 int32_t 	g_CurInVeloQ24 = 0;//Velocity Value in Torque Control Mode
 int32_t g_CurInVelocityQ24 = 0; //Velocity Value in Torque Control Mode
 int32_t g_IrmsCalc = 0;
-int32_t g_VrmsCalc = 0;
+int32_t 	g_Irms_Cmd = 0;
+int32_t 	g_Irms_Cmd_A = 0;
+int32_t 	g_Vrms_Cmd = 0;
+int32_t 	g_VrmsCalc = 0;
+int32_t		g_PrmsCalc=0;
 
 uint32_t g_LdValueQ24 = 0x100000; //Ld的标幺量；
 uint32_t g_LqValueQ24 = 0X100000; //Lq的标幺量;

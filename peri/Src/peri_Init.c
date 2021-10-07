@@ -21,7 +21,7 @@ void InitModule(void)
 
   AlmRcdRead();		//read alarm
   UARTInit();		//uart configure
-  //CANInit(); //20170418 CYL
+  CANInit(); //20170418 CYL
 
   g_LEDErrDisplayMode = (FuncCode_Handle.Ram.F10.F1049 & 0x0F00) >> 8;
   SysTimeSequ.Sec10_Flg = OK;		//

@@ -16,9 +16,9 @@ typedef struct
 	uint32_t channel3;
 	uint32_t channel4;
 
-	uint16_t tempCanMonEn; //CANÉÏÎ»»ú¼à¿Ø¹¦ÄÜÊ¹ÄÜ ¼æ¾ß·¢ËÍÊ±¼ä¼ä¸ô¹¦ÄÜ
-	uint16_t tempCanMSEn; //CANÖ÷´ÓÍ¨ĞÅ¹¦ÄÜÊ¹ÄÜ	 ¼æ¾ß·¢ËÍÊ±¼ä¼ä¸ô¹¦ÄÜ
-	uint16_t tempCanMREn; //CANÖ÷´ÓÍ¨ĞÅ¹¦ÄÜÊ¹ÄÜ	 ¼æ¾ß½ÓÊÕÊ±¼ä¼ä¸ô¹¦ÄÜ
+	uint16_t tempCanMonEn; //CANä¸Šä½æœºç›‘æ§åŠŸèƒ½ä½¿èƒ½ å…¼å…·å‘é€æ—¶é—´é—´éš”åŠŸèƒ½
+	uint16_t tempCanMSEn; //CANä¸»ä»é€šä¿¡åŠŸèƒ½ä½¿èƒ½	 å…¼å…·å‘é€æ—¶é—´é—´éš”åŠŸèƒ½
+	uint16_t tempCanMREn; //CANä¸»ä»é€šä¿¡åŠŸèƒ½ä½¿èƒ½	 å…¼å…·æ¥æ”¶æ—¶é—´é—´éš”åŠŸèƒ½
 
 	uint8_t  Can_Step;
 	uint8_t  Can_Number;
